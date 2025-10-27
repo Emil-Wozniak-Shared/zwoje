@@ -1,0 +1,8 @@
+<!DOCTYPE html>
+<html>
+<head><title>Invoice</title></head>
+<body>
+    <h1>Invoice for ${name}</h1>
+    <p>Amount due: $${amount}</p>
+</body>
+</html>

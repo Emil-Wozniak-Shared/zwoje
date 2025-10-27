@@ -1,0 +1,13 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.w3.org/1999/xhtml">
+<head>
+    <title>Invoice</title>
+</head>
+<body>
+<h1>Invoice for <span th:text="${name}">Name</span></h1>
+<p>Amount due: $<span th:text="${amount}">0.00</span></p>
+<ul>
+    <li th:each="item : ${items}" th:text="${item}"></li>
+</ul>
+</body>
+</html>

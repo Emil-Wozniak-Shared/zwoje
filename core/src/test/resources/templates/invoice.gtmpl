@@ -1,0 +1,15 @@
+html {
+    head {
+        title("Invoice")
+    }
+    body {
+        h1("Invoice for $name")
+        p("Amount due: \$${amount}")
+        if (amount > 100) {
+            p("⚠️ High-value invoice")
+        }
+        ul {
+            li("Date: ${new Date()}")
+        }
+    }
+}

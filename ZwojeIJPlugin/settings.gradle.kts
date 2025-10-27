@@ -1,0 +1,1 @@
+rootProject.name = "Zwoje IJ Plugin"

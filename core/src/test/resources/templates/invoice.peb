@@ -1,0 +1,20 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Invoice</title>
+</head>
+<body>
+    <h1>Invoice for {{ name }}</h1>
+    <p>Amount due: ${{ amount }}</p>
+
+    {% if amount > 100 %}
+      <p><strong>High-value invoice!</strong></p>
+    {% endif %}
+
+    <ul>
+      {% for item in items %}
+        <li>{{ item }}</li>
+      {% endfor %}
+    </ul>
+</body>
+</html>
