@@ -1,6 +1,6 @@
 package pl.ejdev.zwoje.core.template
 
-enum class Template(
+enum class TemplateType(
     val artifactName: String
 ) {
     FreeMarker("freemarker"),

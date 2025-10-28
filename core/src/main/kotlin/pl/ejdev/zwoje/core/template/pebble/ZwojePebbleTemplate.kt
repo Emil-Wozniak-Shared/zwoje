@@ -5,6 +5,7 @@ import io.pebbletemplates.pebble.loader.ClasspathLoader
 import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.utils.dataClassMembersFilter
+import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.StringWriter
 
 abstract class ZwojePebbleTemplate<INPUT : Any>(
@@ -28,13 +29,8 @@ abstract class ZwojePebbleTemplate<INPUT : Any>(
     override fun compile(input: TemplateInputData<INPUT>): String {
         val template = engine.getTemplate(templatePath)
         val writer = StringWriter()
-        template.evaluate(writer, toBinding(input.data))
+        input.getMembers<INPUT>().toMap()
+        template.evaluate(writer, input.getMembers<INPUT>().toMap())
         return writer.toString()
-    }
-
-    private fun toBinding(data: Any): MutableMap<String, Any?> {
-        return data::class.members
-            .filter(dataClassMembersFilter)
-            .associateTo(mutableMapOf()) { it.name to runCatching { it.call(data) }.getOrNull() }
     }
 }

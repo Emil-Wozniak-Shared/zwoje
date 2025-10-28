@@ -6,7 +6,7 @@ import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
-import pl.ejdev.zwoje.core.utils.dataClassMembersFilter
+import pl.ejdev.zwoje.core.utils.getMembers
 
 abstract class ZwojeThymeleafTemplate<INPUT : Any>(
     private val templateName: String
@@ -24,20 +24,12 @@ abstract class ZwojeThymeleafTemplate<INPUT : Any>(
         }
     }
 
-    override fun compile(input: TemplateInputData<INPUT>): String {
-        val context = Context().apply {
-            // inject all fields of input.data into the template context
-            val data = input.data
-            data::class.members
-                .filter(dataClassMembersFilter)
-                .mapNotNull { member ->
-                    member.runCatching { name to this.call(data) }.getOrNull()
-                }
-                .forEach { (name, value) ->
-                    setVariable(name, value)
-                }
-        }
-
-        return templateEngine.process(templateName, context)
-    }
+    override fun compile(input: TemplateInputData<INPUT>): String =
+        templateEngine.process(
+            templateName,
+            Context().apply {
+                input.getMembers<INPUT>()
+                    .forEach { (name, value) -> setVariable(name, value) }
+            }
+        )
 }

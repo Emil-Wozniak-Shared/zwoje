@@ -4,6 +4,7 @@ import groovy.text.markup.MarkupTemplateEngine
 import groovy.text.markup.TemplateConfiguration
 import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
+import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.StringWriter
 
 abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
@@ -12,15 +13,9 @@ abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
 
     companion object {
         private val engine: MarkupTemplateEngine by lazy {
-            val config = TemplateConfiguration().apply {
-//                autoNewLine = true
-//                autoIndent = true
-//                declarationEncoding = "UTF-8"
-//                useDoubleQuotes = true
-            }
             MarkupTemplateEngine(
                 Thread.currentThread().contextClassLoader,
-                config
+                TemplateConfiguration()
             )
         }
     }
@@ -30,18 +25,10 @@ abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
             ?: throw IllegalArgumentException("Template not found at path: $templatePath")
 
         val writer = StringWriter()
-        template.make(toBinding(input.data)).writeTo(writer)
+        template
+            .make(input.getMembers<INPUT>().toMap())
+            .writeTo(writer)
         return writer.toString()
-    }
-
-    private fun toBinding(data: Any): Map<String, Any?> {
-        return data::class.members
-            .filter {
-                !it.name.startsWith("component") &&
-                        !it.name.startsWith("hashCode") &&
-                        !it.name.startsWith("toString")
-            }
-            .associate { it.name to runCatching { it.call(data) }.getOrNull() }
     }
 }
 
