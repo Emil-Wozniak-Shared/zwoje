@@ -9,6 +9,7 @@ import com.intellij.openapi.roots.OrderEnumerator
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateResolver
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
+import java.io.File
 
 @Service(Service.Level.PROJECT)
 class HtmlEngineSearchService(
@@ -29,6 +30,7 @@ class HtmlEngineSearchService(
 
     fun templateResolvers() {
         findTemplateEngineFilesInRoots()
+
         moduleTemplates.values.map { template ->
             when (template) {
                 TemplateType.Thymeleaf -> zwojeThymeleafTemplateResolver
@@ -45,6 +47,17 @@ class HtmlEngineSearchService(
         val moduleAndRoots = moduleTemplates
             .map { (module, _) -> module.name to ModuleRootManager.getInstance(module).contentRoots.map { it.path } }
             .toMap()
+        moduleAndRoots
+            .asSequence()
+            .map { it.value.first() }
+            .map { File(it) }
+            .filter { it.exists() }
+            .flatMap { it.listFiles().toList() }
+            .filter { it.name.contains("resources") }
+            .flatMap { it.listFiles().toList() }
+            .filter { it.name.endsWith("templates") }
+            .flatMap { it.listFiles().toList() }
+            .toList()
     }
 
     private fun findTemplateEngineFilesInRoots(dependencies: List<String>): List<TemplateType> =
