@@ -9,6 +9,7 @@ version = "1.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
+    mavenLocal()
     intellijPlatform {
         defaultRepositories()
     }
@@ -18,11 +19,12 @@ dependencies {
     intellijPlatform {
         create("IC", "2025.1.4.1")
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
-        // Add necessary plugin dependencies for compilation here, example:
         // bundledPlugin("com.intellij.java")
 
         implementation("org.swinglabs:pdf-renderer:1.0.5")
         implementation("org.apache.pdfbox:pdfbox:3.0.6")
+        implementation("ca.weblite:swinky-main:0.0.24")
+        implementation("pl.ejdev.zwoje:core:1.0-SNAPSHOT")
     }
 }
 

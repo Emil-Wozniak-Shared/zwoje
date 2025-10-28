@@ -43,6 +43,8 @@ const val TIMEOUT: Long = 500
 fun Row.pdfViewer(project: Project, useThumbs: Boolean = true) =
     cell(PDFViewer(project, useThumbs).content)
 
+private const val READ_MODE = "r"
+
 internal class PDFViewer(
     private val project: Project,
     private val useThumbs: Boolean = true,
@@ -66,7 +68,7 @@ internal class PDFViewer(
     var fullScreen: FullScreenWindow? = null
 
     private var pageBuilder: PageBuilder = PageBuilder(this)
-    private var prevDirChoice: File? = null
+    private var previousDirChoice: File? = null
 
     val content = panel(BorderLayout()) {
         if (doThumb) {
@@ -161,15 +163,15 @@ internal class PDFViewer(
     }
 
     private fun openFile(file: File) {
-        val randomAccessFile = RandomAccessFile(file, "r")
+        val randomAccessFile = RandomAccessFile(file, READ_MODE)
         val channel = randomAccessFile.getChannel()
-        val buf: ByteBuffer = channel.map(READ_ONLY, 0, channel.size())
-        openPDFByteBuffer(buf, file.path, file.getName())
+        val buffer: ByteBuffer = channel.map(READ_ONLY, 0, channel.size())
+        openPDFByteBuffer(buffer, file.path, file.getName())
     }
 
-    private fun openPDFByteBuffer(buf: ByteBuffer?, path: String?, name: String) {
+    private fun openPDFByteBuffer(buffer: ByteBuffer, path: String, name: String) {
         val newFile: PDFFile? = try {
-            PDFFile(buf)
+            PDFFile(buffer)
         } catch (_: IOException) {
             openError("$path doesn't appear to be a PDF file.")
             null
@@ -218,7 +220,7 @@ internal class PDFViewer(
     private fun doOpen() = try {
         PdfChooser.choosePdf(project = project) {
             val selectedFile = File(it.path)
-            prevDirChoice = selectedFile
+            previousDirChoice = selectedFile
             openFile(selectedFile)
         }
     } catch (e: Exception) {
