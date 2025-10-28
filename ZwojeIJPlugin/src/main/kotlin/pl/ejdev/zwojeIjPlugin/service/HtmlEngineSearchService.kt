@@ -6,7 +6,7 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.ModuleRootManager
 import com.intellij.openapi.roots.OrderEnumerator
-import pl.ejdev.zwoje.core.template.Template
+import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateResolver
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 
@@ -14,7 +14,7 @@ import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 class HtmlEngineSearchService(
     private val project: Project
 ) {
-    private var moduleTemplates: Map<Module, Template> = mapOf()
+    private var moduleTemplates: Map<Module, TemplateType> = mapOf()
     init {
         moduleTemplates = modulesAndDependencies()
             .asSequence()
@@ -31,12 +31,12 @@ class HtmlEngineSearchService(
         findTemplateEngineFilesInRoots()
         moduleTemplates.values.map { template ->
             when (template) {
-                Template.Thymeleaf -> zwojeThymeleafTemplateResolver
-                Template.GroovyTemplate -> zwojeGroovyMarkupTemplateResolver
-                Template.Mustache -> TODO()
-                Template.FreeMarker -> TODO()
-                Template.KotlinxHtml -> TODO()
-                Template.Pebble -> TODO()
+                TemplateType.Thymeleaf -> zwojeThymeleafTemplateResolver
+                TemplateType.GroovyTemplate -> zwojeGroovyMarkupTemplateResolver
+                TemplateType.Mustache -> TODO()
+                TemplateType.FreeMarker -> TODO()
+                TemplateType.KotlinxHtml -> TODO()
+                TemplateType.Pebble -> TODO()
             }
         }
     }
@@ -47,8 +47,8 @@ class HtmlEngineSearchService(
             .toMap()
     }
 
-    private fun findTemplateEngineFilesInRoots(dependencies: List<String>): List<Template> =
-        dependencies.mapNotNull { Template.entries.find { template -> it.contains(template.artifactName) } }
+    private fun findTemplateEngineFilesInRoots(dependencies: List<String>): List<TemplateType> =
+        dependencies.mapNotNull { TemplateType.entries.find { template -> it.contains(template.artifactName) } }
 
     fun modulesAndDependencies(): Map<Module, List<String>> =
         ModuleManager.getInstance(project).modules.associateWith { module ->
