@@ -3,18 +3,15 @@ package pl.ejdev.zwoje.core.groovyTemplates
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.shouldNotBe
 import pl.ejdev.zwoje.core.ZwojeEngine
+import pl.ejdev.zwoje.core.common.InvoiceData
+import pl.ejdev.zwoje.core.common.SampleTemplateInputData
+import pl.ejdev.zwoje.core.common.TEMPLATE_NAME
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
 import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplate
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateResolver
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplate
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
-
-private const val TEMPLATE_NAME = "invoice"
-
-class SampleTemplateInputData(input: InvoiceData) : TemplateInputData<InvoiceData>(input)
-
-data class InvoiceData(val name: String, val amount: Double, val items: List<String>)
 
 object InvoiceTemplate : ZwojeGroovyMarkupTemplate<InvoiceData>("templates/invoice.gtmpl")
 

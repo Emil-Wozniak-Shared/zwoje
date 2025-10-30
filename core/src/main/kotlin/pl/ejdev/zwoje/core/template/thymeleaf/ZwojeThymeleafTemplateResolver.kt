@@ -2,12 +2,15 @@ package pl.ejdev.zwoje.core.template.thymeleaf
 
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
-class ZwojeThymeleafTemplateResolver : ZwojeTemplateResolver<Any>() {
+class ZwojeThymeleafTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.Thymeleaf
+    override val templatePath: String = "src/main/resources"
+    override val templateExt: String = "html"
 
     private val templates = mutableMapOf<String, ZwojeThymeleafTemplate<*>>()
 
