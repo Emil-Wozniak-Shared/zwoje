@@ -55,7 +55,7 @@ class HtmlEngineSearchService(
             }
     }
 
-    private fun findTemplateEngineFilesInRoots(spec: TemplateSpec) {
+    private fun findTemplateEngineFilesInRoots(specification: TemplateSpec) {
         val moduleAndRoots = moduleTemplates
             .map { (module, _) -> module.name to ModuleRootManager.getInstance(module).contentRoots.map { it.path } }
             .toMap()
@@ -66,7 +66,7 @@ class HtmlEngineSearchService(
             .map { File(it) }
             .filter { it.exists() }
             .flatMap { it.listFiles().toList() }
-            .filter { it.name == spec.path }
+            .filter { it.name == specification.path }
             .flatMap { it.listFiles().toList() }
             .filter { it.name.endsWith(TEMPLATES) }
             .flatMap { it.listFiles().toList() }

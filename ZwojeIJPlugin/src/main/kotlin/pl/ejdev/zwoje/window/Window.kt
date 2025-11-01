@@ -4,6 +4,7 @@ import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAware
 import com.intellij.openapi.project.DumbUtil
 import com.intellij.openapi.project.Project
+import com.intellij.ui.components.JBLabel
 import com.intellij.ui.components.Label
 import com.intellij.ui.components.dialog
 import javax.swing.JLabel
@@ -15,7 +16,6 @@ abstract class Window(
     @Suppress("UnstableApiUsage")
     override fun mayUseIndices(): Boolean = false
 
-
     protected var engineStatusLabel: JLabel = JLabel("")
 
     private companion object {
@@ -24,7 +24,7 @@ abstract class Window(
             println(throwable)
             dialog(
                 title = "Error",
-                Label("Error: ${throwable.cause}")
+                JBLabel("Error: ${throwable.cause}")
             )
         }
 
