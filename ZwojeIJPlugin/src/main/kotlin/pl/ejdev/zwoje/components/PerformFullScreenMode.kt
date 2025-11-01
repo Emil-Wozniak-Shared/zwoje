@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components
+package pl.ejdev.zwoje.components
 
 import com.sun.pdfview.FullScreenWindow
 import com.sun.pdfview.PagePanel

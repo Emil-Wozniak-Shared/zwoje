@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components
+package pl.ejdev.zwoje.components
 
 import java.awt.print.PrinterException
 import javax.swing.JOptionPane.ERROR_MESSAGE

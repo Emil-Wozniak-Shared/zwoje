@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin
+package pl.ejdev.zwoje
 
 import com.intellij.openapi.util.IconLoader
 import javax.swing.Icon

@@ -1,8 +1,8 @@
-package pl.ejdev.zwojeIjPlugin.components.threads
+package pl.ejdev.zwoje.components.threads
 
 import com.sun.pdfview.PDFPrintPage
-import pl.ejdev.zwojeIjPlugin.components.PDFViewer
-import pl.ejdev.zwojeIjPlugin.components.printAborted
+import pl.ejdev.zwoje.components.PDFViewer
+import pl.ejdev.zwoje.components.printAborted
 import java.awt.print.PrinterException
 import java.awt.print.PrinterJob
 

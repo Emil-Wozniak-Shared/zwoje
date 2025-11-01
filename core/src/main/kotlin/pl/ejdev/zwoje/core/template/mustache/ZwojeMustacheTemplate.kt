@@ -5,6 +5,7 @@ import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import java.io.InputStreamReader
 import java.io.StringWriter
+import kotlin.text.Charsets.UTF_8
 
 abstract class ZwojeMustacheTemplate<INPUT : Any>(
     private val resourcePath: String
@@ -16,7 +17,7 @@ abstract class ZwojeMustacheTemplate<INPUT : Any>(
         val resourceStream = javaClass.classLoader.getResourceAsStream(resourcePath)
             ?: throw IllegalArgumentException("Template not found at path: $resourcePath")
 
-        val reader = InputStreamReader(resourceStream, Charsets.UTF_8)
+        val reader = InputStreamReader(resourceStream, UTF_8)
         val mustache = mustacheFactory.compile(reader, resourcePath)
         val writer = StringWriter()
         mustache.execute(writer, input.data).flush()

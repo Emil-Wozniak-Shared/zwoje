@@ -1,5 +1,9 @@
+// settings.gradle.kts (root)
 pluginManagement {
-    includeBuild("build-logic")
+    repositories {
+        mavenCentral()
+        gradlePluginPortal()
+    }
 }
 
 plugins {
@@ -7,4 +11,5 @@ plugins {
 }
 
 rootProject.name = "zwoje"
-include(":ZwojeIJPlugin", ":core")
+include(":ZwojeIJPlugin")
+include(":core")

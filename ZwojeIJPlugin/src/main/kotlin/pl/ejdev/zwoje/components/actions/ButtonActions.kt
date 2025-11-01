@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components.actions
+package pl.ejdev.zwoje.components.actions
 
 import com.intellij.icons.AllIcons
 import java.awt.event.ActionEvent

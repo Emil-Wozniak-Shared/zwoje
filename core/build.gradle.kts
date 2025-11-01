@@ -1,4 +1,5 @@
 plugins {
+    `java-library`
     `maven-publish`
     kotlin("jvm") version "2.2.20"
     id("io.kotest") version "6.0.4"

@@ -1,32 +1,16 @@
-<!-- Plugin Configuration File. Read more: https://plugins.jetbrains.com/docs/intellij/plugin-configuration-file.html -->
 <idea-plugin>
-    <!-- Unique identifier of the plugin. It should be FQN. It cannot be changed between the plugin versions. -->
     <id>pl.ejdev.ZwojeIJPlugin</id>
-
-    <!-- Public plugin name should be written in Title Case.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-name -->
-    <name>Zwoje IJ Plugin</name>
-
-    <!-- A displayed Vendor name or Organization ID displayed on the Plugins Page. -->
+    <name>Zwoje IJ</name>
     <vendor url="https://www.ejdev.pl">EJ Dev</vendor>
-
-    <!-- Description of the plugin displayed on the Plugin Page and IDE Plugin Manager.
-         Guidelines: https://plugins.jetbrains.com/docs/marketplace/best-practices-for-listing.html#plugin-description -->
     <description><![CDATA[
-        Enter short description for your plugin here.<br>
-        <em>most HTML tags may be used</em>
+        This plugin provides possibility for a developer to see how PDF rendered
+        from HTML template will look like without necessity to start application.
     ]]></description>
-
-    <!-- Product and plugin compatibility requirements.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-compatibility.html -->
     <depends>com.intellij.modules.platform</depends>
-
-    <!-- Extension points defined by the plugin.
-         Read more: https://plugins.jetbrains.com/docs/intellij/plugin-extension-points.html -->
     <extensions defaultExtensionNs="com.intellij">
         <toolWindow
-                id="Higson CLI"
-                factoryClass="pl.ejdev.zwojeIjPlugin.window.ZwojeWindowFactory"
+                id="Zwoje IJ"
+                factoryClass="pl.ejdev.zwoje.window.ZwojeWindowFactory"
         />
 <!--                icon="/icons/favicon.svg"-->
 

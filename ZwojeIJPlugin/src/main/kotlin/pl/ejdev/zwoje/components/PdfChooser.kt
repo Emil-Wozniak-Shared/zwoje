@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components
+package pl.ejdev.zwoje.components
 
 import com.intellij.openapi.fileChooser.FileChooser
 import com.intellij.openapi.fileChooser.FileChooserDescriptor

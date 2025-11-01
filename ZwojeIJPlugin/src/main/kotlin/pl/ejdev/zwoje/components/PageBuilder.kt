@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components
+package pl.ejdev.zwoje.components
 
 internal class PageBuilder(
     private val viewer: PDFViewer

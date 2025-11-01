@@ -1,6 +1,6 @@
-package pl.ejdev.zwojeIjPlugin.components.threads
+package pl.ejdev.zwoje.components.threads
 
-import pl.ejdev.zwojeIjPlugin.components.PDFViewer
+import pl.ejdev.zwoje.components.PDFViewer
 import java.awt.Dimension
 import java.awt.geom.Rectangle2D
 

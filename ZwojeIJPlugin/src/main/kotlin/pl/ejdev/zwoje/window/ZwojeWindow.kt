@@ -1,12 +1,12 @@
-package pl.ejdev.zwojeIjPlugin.window
+package pl.ejdev.zwoje.window
 
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.DialogPanel
 import com.intellij.openapi.wm.ToolWindow
 import com.intellij.ui.dsl.builder.panel
-import pl.ejdev.zwojeIjPlugin.components.pdfViewer
-import pl.ejdev.zwojeIjPlugin.service.HtmlEngineSearchService
+import pl.ejdev.zwoje.components.pdfViewer
+import pl.ejdev.zwoje.service.HtmlEngineSearchService
 
 class ZwojeWindow(
     private val toolWindow: ToolWindow,

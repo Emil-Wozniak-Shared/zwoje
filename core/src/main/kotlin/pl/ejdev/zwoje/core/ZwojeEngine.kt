@@ -10,7 +10,7 @@ class ZwojeEngine(
 ) {
 
     fun <T : Any> compile(template: String, templateData: TemplateInputData<T>): ByteArray {
-        val htmlTemplate = templateResolver.get(template)
+        val htmlTemplate = templateResolver[template]
         val html = htmlTemplate.compile(templateData)
         return compileEngine.compile(html)
     }

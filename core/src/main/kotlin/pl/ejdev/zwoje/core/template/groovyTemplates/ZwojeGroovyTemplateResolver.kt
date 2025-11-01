@@ -2,12 +2,15 @@ package pl.ejdev.zwoje.core.template.groovyTemplates
 
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
-class ZwojeGroovyMarkupTemplateResolver : ZwojeTemplateResolver<Any>() {
+class ZwojeGroovyMarkupTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.GroovyTemplate
+    override val templatePath: String = "src/main/resources/templates/"
+    override val extension: String = "gtmpl"
 
     private val templates = mutableMapOf<String, ZwojeGroovyMarkupTemplate<*>>()
 

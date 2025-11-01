@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components
+package pl.ejdev.zwoje.components
 
 import java.awt.Component
 import java.awt.LayoutManager

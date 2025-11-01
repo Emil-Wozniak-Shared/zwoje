@@ -1,13 +1,12 @@
 package pl.ejdev.zwoje.core.template.freemarker
 
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
-import pl.ejdev.zwoje.core.template.TemplateInputData
-import pl.ejdev.zwoje.core.template.TemplateType
-import pl.ejdev.zwoje.core.template.ZwojeTemplate
-import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
+import pl.ejdev.zwoje.core.template.*
 
-class ZwojeFreeMarkerTemplateResolver() : ZwojeTemplateResolver<Any>() {
+class ZwojeFreeMarkerTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.FreeMarker
+    override val templatePath: String = "src/main/resources/templates/"
+    override val extension: String = "ftl"
 
     private val templates = mutableMapOf<String, ZwojeFreeMarkerTemplate<*>>()
 
@@ -15,6 +14,7 @@ class ZwojeFreeMarkerTemplateResolver() : ZwojeTemplateResolver<Any>() {
         templates[id] = template as ZwojeFreeMarkerTemplate<T>
     }
 
+    @Suppress("UNCHECKED_CAST")
     override fun get(id: String): ZwojeTemplate<TemplateInputData<Any>, Any> {
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojeFreeMarkerTemplate<Any>

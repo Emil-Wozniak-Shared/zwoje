@@ -12,25 +12,27 @@ abstract class ZwojePebbleTemplate<INPUT : Any>(
     private val templatePath: String
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
-    companion object {
+    override fun compile(input: TemplateInputData<INPUT>): String {
+        val template = engine.getTemplate(templatePath)
+        val writer = StringWriter()
+        template.evaluate(writer, input.getMembers<INPUT>().toMap())
+        return writer.toString()
+    }
+
+    private companion object {
         private val engine: PebbleEngine by lazy {
             PebbleEngine.Builder()
-                .loader(ClasspathLoader().apply {
-                    prefix = "templates"
-                    suffix = ".peb"
-                    charset = "UTF-8"
-                })
+                .loader(loader())
                 .cacheActive(true)
                 .strictVariables(false)
                 .build()
         }
+
+        private fun loader(): ClasspathLoader = ClasspathLoader().apply {
+            prefix = "templates"
+            suffix = ".peb"
+            charset = "UTF-8"
+        }
     }
 
-    override fun compile(input: TemplateInputData<INPUT>): String {
-        val template = engine.getTemplate(templatePath)
-        val writer = StringWriter()
-        input.getMembers<INPUT>().toMap()
-        template.evaluate(writer, input.getMembers<INPUT>().toMap())
-        return writer.toString()
-    }
 }

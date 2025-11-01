@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.components
+package pl.ejdev.zwoje.components
 
 import com.intellij.icons.AllIcons.Actions.Play_first
 import com.intellij.icons.AllIcons.Actions.Play_last
@@ -10,11 +10,11 @@ import com.intellij.ui.JBColor
 import com.intellij.ui.dsl.builder.Row
 import com.sun.pdfview.*
 import com.sun.pdfview.action.GoToAction
-import pl.ejdev.zwojeIjPlugin.components.JPanelKotlin.BorderLayoutKt.*
-import pl.ejdev.zwojeIjPlugin.components.SplitPaneOrientation.HORIZONTAL_SPLIT
-import pl.ejdev.zwojeIjPlugin.components.actions.*
-import pl.ejdev.zwojeIjPlugin.components.threads.PagePreparer
-import pl.ejdev.zwojeIjPlugin.components.threads.PrintThread
+import pl.ejdev.zwoje.components.JPanelKotlin.BorderLayoutKt.*
+import pl.ejdev.zwoje.components.SplitPaneOrientation.HORIZONTAL_SPLIT
+import pl.ejdev.zwoje.components.actions.*
+import pl.ejdev.zwoje.components.threads.PagePreparer
+import pl.ejdev.zwoje.components.threads.PrintThread
 import java.awt.BorderLayout
 import java.awt.Dimension
 import java.awt.event.KeyEvent

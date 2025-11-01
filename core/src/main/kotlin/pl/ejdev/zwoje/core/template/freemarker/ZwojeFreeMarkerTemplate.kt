@@ -9,8 +9,14 @@ import java.io.StringWriter
 abstract class ZwojeFreeMarkerTemplate<INPUT : Any>(
     private val templateName: String
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
+    override fun compile(input: TemplateInputData<INPUT>): String {
+        val template = cfg.getTemplate("$templateName.ftl")
+        val writer = StringWriter()
+        template.process(input.data, writer)
+        return writer.toString()
+    }
 
-    companion object {
+    private companion object {
         private val cfg: Configuration by lazy {
             Configuration(Configuration.VERSION_2_3_33).apply {
                 setClassLoaderForTemplateLoading(
@@ -24,12 +30,5 @@ abstract class ZwojeFreeMarkerTemplate<INPUT : Any>(
                 fallbackOnNullLoopVariable = false
             }
         }
-    }
-
-    override fun compile(input: TemplateInputData<INPUT>): String {
-        val template = cfg.getTemplate("$templateName.ftl")
-        val writer = StringWriter()
-        template.process(input.data, writer)
-        return writer.toString()
     }
 }

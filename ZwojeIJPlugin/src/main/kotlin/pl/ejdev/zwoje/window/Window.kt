@@ -1,4 +1,4 @@
-package pl.ejdev.zwojeIjPlugin.window
+package pl.ejdev.zwoje.window
 
 import com.intellij.openapi.diagnostic.Logger
 import com.intellij.openapi.project.DumbAware

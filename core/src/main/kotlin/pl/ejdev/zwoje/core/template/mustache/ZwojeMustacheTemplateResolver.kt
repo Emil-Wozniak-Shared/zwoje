@@ -2,12 +2,15 @@ package pl.ejdev.zwoje.core.template.mustache
 
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
-class ZwojeMustacheTemplateResolver : ZwojeTemplateResolver<Any>() {
+class ZwojeMustacheTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.Mustache
+    override val templatePath: String = "src/main/resources/templates/"
+    override val extension: String = "mustache"
 
     private val templates = mutableMapOf<String, ZwojeMustacheTemplate<*>>()
 

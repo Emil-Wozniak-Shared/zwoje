@@ -1,4 +1,5 @@
 plugins {
+
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
     id("org.jetbrains.intellij.platform") version "2.7.1"
@@ -21,10 +22,11 @@ dependencies {
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
         // bundledPlugin("com.intellij.java")
 
+//        implementation(project(":core"))
+        implementation("pl.ejdev.zwoje:core:1.0-SNAPSHOT")
         implementation("org.swinglabs:pdf-renderer:1.0.5")
         implementation("org.apache.pdfbox:pdfbox:3.0.6")
         implementation("ca.weblite:swinky-main:0.0.24")
-        implementation("pl.ejdev.zwoje:core:1.0-SNAPSHOT")
     }
 }
 
@@ -52,3 +54,4 @@ kotlin {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }
+

@@ -2,12 +2,15 @@ package pl.ejdev.zwoje.core.template.pebble
 
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
-class ZwojePebbleTemplateResolver : ZwojeTemplateResolver<Any>() {
+class ZwojePebbleTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.Pebble
+    override val templatePath: String = "src/main/resources/templates/"
+    override val extension: String = "peb"
 
     private val templates = mutableMapOf<String, ZwojePebbleTemplate<*>>()
 
