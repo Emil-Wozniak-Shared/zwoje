@@ -1,6 +1,7 @@
 package pl.ejdev.zwoje.core.template
 
 interface TemplateProvider {
-    val templatePath: String
+    val baseDir: String
+    val templatesDir: String
     val extension: String
 }

@@ -7,9 +7,10 @@ import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
-class ZwojeGroovyMarkupTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvider {
+class ZwojeGroovyMarkupTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.GroovyTemplate
-    override val templatePath: String = "src/main/resources/templates/"
+    override val baseDir: String = "src/main/resources"
+    override val templatesDir: String = "templates"
     override val extension: String = "gtmpl"
 
     private val templates = mutableMapOf<String, ZwojeGroovyMarkupTemplate<*>>()

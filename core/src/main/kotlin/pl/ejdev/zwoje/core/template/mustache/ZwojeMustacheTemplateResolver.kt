@@ -9,7 +9,8 @@ import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
 class ZwojeMustacheTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.Mustache
-    override val templatePath: String = "src/main/resources/templates/"
+    override val baseDir: String = "src/main/resources"
+    override val templatesDir: String = "templates"
     override val extension: String = "mustache"
 
     private val templates = mutableMapOf<String, ZwojeMustacheTemplate<*>>()

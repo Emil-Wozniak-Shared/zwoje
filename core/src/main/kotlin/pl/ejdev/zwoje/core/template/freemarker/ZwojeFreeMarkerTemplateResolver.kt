@@ -5,7 +5,8 @@ import pl.ejdev.zwoje.core.template.*
 
 class ZwojeFreeMarkerTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.FreeMarker
-    override val templatePath: String = "src/main/resources/templates/"
+    override val baseDir: String = "src/main/resources"
+    override val templatesDir: String = "templates"
     override val extension: String = "ftl"
 
     private val templates = mutableMapOf<String, ZwojeFreeMarkerTemplate<*>>()

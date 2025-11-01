@@ -10,7 +10,8 @@ import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 
 class ZwojeThymeleafTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.Thymeleaf
-    override val templatePath: String = "src/main/resources/templates/"
+    override val baseDir: String = "src/main/resources"
+    override val templatesDir: String = "templates"
     override val extension: String = "html"
 
     private val templates = mutableMapOf<String, ZwojeThymeleafTemplate<*>>()
