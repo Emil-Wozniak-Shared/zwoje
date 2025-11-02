@@ -2,6 +2,7 @@ package pl.ejdev.zwoje.core.template.freemarker
 
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
 import pl.ejdev.zwoje.core.template.*
+import kotlin.collections.set
 
 class ZwojeFreeMarkerTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.FreeMarker
@@ -20,4 +21,6 @@ class ZwojeFreeMarkerTemplateResolver() : ZwojeTemplateResolver<Any>(), Template
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojeFreeMarkerTemplate<Any>
     }
+
+    override fun exists(id: String): Boolean = templates[id] != null
 }

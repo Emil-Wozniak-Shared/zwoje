@@ -22,10 +22,9 @@ dependencies {
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
         // bundledPlugin("com.intellij.java")
 
-//        implementation(project(":core"))
         implementation("pl.ejdev.zwoje:core:1.0-SNAPSHOT")
         implementation("org.swinglabs:pdf-renderer:1.0.5")
-        implementation("org.apache.pdfbox:pdfbox:3.0.6")
+        implementation("org.apache.pdfbox:pdfbox:2.0.30")
         implementation("ca.weblite:swinky-main:0.0.24")
     }
 }

@@ -23,4 +23,6 @@ class ZwojePebbleTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvid
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojePebbleTemplate<Any>
     }
+
+    override fun exists(id: String): Boolean = templates[id] != null
 }

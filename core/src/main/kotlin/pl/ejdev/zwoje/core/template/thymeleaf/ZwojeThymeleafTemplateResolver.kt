@@ -25,4 +25,6 @@ class ZwojeThymeleafTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateP
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojeThymeleafTemplate<Any>
     }
+
+    override fun exists(id: String): Boolean = templates[id] != null
 }
