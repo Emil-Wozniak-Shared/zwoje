@@ -14,7 +14,7 @@ abstract class ZwojeThymeleafTemplate<INPUT : Any>(
     private val templateName: String,
     private val templatePath: String? = null
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
-    private val engine = if (templatePath == null) classpathEngine else templateEngine(templatePath)
+    val engine: TemplateEngine = if (templatePath == null) classpathEngine else templateEngine(templatePath)
 
     override fun compile(input: TemplateInputData<INPUT>): String =
         engine.process(templateName, input.toContext())
@@ -23,7 +23,7 @@ abstract class ZwojeThymeleafTemplate<INPUT : Any>(
         getMembers<INPUT>().forEach { (name, value) -> setVariable(name, value) }
     }
 
-    companion object {
+    private companion object {
         private val classpathEngine: TemplateEngine by lazy {
             val resolver = ClassLoaderTemplateResolver().apply {
                 prefix = "templates/"
