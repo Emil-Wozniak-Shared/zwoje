@@ -23,5 +23,7 @@ class ZwojeGroovyMarkupTemplateResolver() : ZwojeTemplateResolver<Any>(), Templa
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojeGroovyMarkupTemplate<Any>
     }
+
+    override fun exists(id: String): Boolean = templates[id] != null
 }
 

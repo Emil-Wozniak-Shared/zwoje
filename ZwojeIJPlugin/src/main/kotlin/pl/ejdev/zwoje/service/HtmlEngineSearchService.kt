@@ -2,7 +2,6 @@ package pl.ejdev.zwoje.service
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.Service.Level
-import com.intellij.openapi.components.service
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
@@ -13,9 +12,9 @@ import pl.ejdev.zwoje.core.template.TemplateType
 class HtmlEngineSearchService(
     private val project: Project
 ) {
-    private val templateService = project.service<TemplateService>()
-
     private var moduleTemplates: Map<Module, TemplateType> = mapOf()
+
+    fun getModuleTemplates() = moduleTemplates
 
     init {
         moduleTemplates = modulesAndDependencies()
@@ -24,10 +23,6 @@ class HtmlEngineSearchService(
             .filter { (_, engine) -> engine.isNotEmpty() }
             .map { (name, engine) -> name to engine.first() }
             .associate { (name, engine) -> name to engine }
-    }
-
-    fun templateResolvers() {
-        templateService.templateResolvers(moduleTemplates)
     }
 
     private fun findTemplateEngineFilesInRoots(dependencies: List<String>): List<TemplateType> =

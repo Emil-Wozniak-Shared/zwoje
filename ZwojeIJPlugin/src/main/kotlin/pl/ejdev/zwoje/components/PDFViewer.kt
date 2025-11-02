@@ -2,12 +2,9 @@ package pl.ejdev.zwoje.components
 
 import com.intellij.icons.AllIcons.Actions.Play_first
 import com.intellij.icons.AllIcons.Actions.Play_last
-import com.intellij.icons.AllIcons.General.ArrowLeft
-import com.intellij.icons.AllIcons.General.ArrowRight
-import com.intellij.icons.AllIcons.General.Print
+import com.intellij.icons.AllIcons.General.*
 import com.intellij.openapi.project.Project
 import com.intellij.ui.JBColor
-import com.intellij.ui.dsl.builder.Row
 import com.sun.pdfview.*
 import com.sun.pdfview.action.GoToAction
 import pl.ejdev.zwoje.components.JPanelKotlin.BorderLayoutKt.*
@@ -39,9 +36,6 @@ import javax.swing.event.TreeSelectionListener
 import kotlin.concurrent.thread
 
 const val TIMEOUT: Long = 500
-
-fun Row.pdfViewer(project: Project, useThumbs: Boolean = true) =
-    cell(PDFViewer(project, useThumbs).content)
 
 private const val READ_MODE = "r"
 
@@ -113,6 +107,19 @@ internal class PDFViewer(
         setLocation(x = (screenSize.width - width) / 2, y = (screenSize.height - height) / 2)
         if (isEventDispatchThread()) visible()
         else runCatching { invokeAndWait { visible() } }
+    }
+
+    fun loadPdfBytes(bytes: ByteArray, name: String = "Preview.pdf") {
+        try {
+            val buffer = ByteBuffer.wrap(bytes)
+            openPDFByteBuffer(buffer, name, name)
+        } catch (e: IOException) {
+            openError("Failed to open PDF bytes: ${e.message}")
+            e.printStackTrace()
+        } catch (e: Exception) {
+            openError("Unexpected error while opening PDF: ${e.message}")
+            e.printStackTrace()
+        }
     }
 
     override fun gotoPage(pagenum: Int) {

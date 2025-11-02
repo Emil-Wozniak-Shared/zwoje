@@ -1,6 +1,7 @@
 package pl.ejdev.zwoje.window
 
 import com.intellij.openapi.project.Project
+import com.intellij.openapi.util.Key
 import com.intellij.openapi.wm.ToolWindow
 
 class ZwojeWindowFactory  : AbstractWindowFactory() {
@@ -9,6 +10,7 @@ class ZwojeWindowFactory  : AbstractWindowFactory() {
         val content = contentFactory.createContent(pluginWindow.content, null, LOCKED)
         toolWindow.contentManager.apply {
             addContent(content)
+            project.putUserData(ZWOJE_WINDOW_KEY, pluginWindow)
             setSelectedContent(content)
         }
     }
@@ -18,4 +20,8 @@ class ZwojeWindowFactory  : AbstractWindowFactory() {
             toolWindow = toolWindow,
             project = project
         )
+
+    companion object {
+        val ZWOJE_WINDOW_KEY = Key.create<ZwojeWindow>("zwoje.window")
+    }
 }

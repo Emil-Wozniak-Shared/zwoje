@@ -20,4 +20,6 @@ class ZwojeKotlinHtmlTemplateResolver : ZwojeTemplateResolver<Any>() {
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojeKotlinHtmlTemplate<Any>
     }
+
+    override fun exists(id: String): Boolean = templates[id] != null
 }

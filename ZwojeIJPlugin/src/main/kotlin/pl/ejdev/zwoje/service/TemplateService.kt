@@ -4,6 +4,7 @@ import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.Service.Level
 import com.intellij.openapi.module.Module
 import com.intellij.openapi.roots.ModuleRootManager
+import com.intellij.openapi.util.NlsSafe
 import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
@@ -18,15 +19,19 @@ import java.io.File
 @Service(Level.PROJECT)
 class TemplateService {
 
-    fun templateResolvers(moduleTemplates: Map<Module, TemplateType>) {
+    fun templateResolvers(moduleTemplates: Map<Module, TemplateType>): List<ZwojeTemplateResolver<Any>> =
         moduleTemplates.values
             .map { type -> type.toTemplateResolver() }
             .also {
                 when (it) {
                     is TemplateProvider -> TemplateSpecification.of(it)
                     else -> TemplateSpecification.DEFAULT
-                }.let { findTemplateEngineFilesInRoots(it, moduleTemplates) }
+                }
             }
+
+    fun createTemplateSpecification(resolver: ZwojeTemplateResolver<Any>) = when (resolver) {
+        is TemplateProvider -> TemplateSpecification.of(resolver)
+        else -> TemplateSpecification.DEFAULT
     }
 
     private fun TemplateType.toTemplateResolver(): ZwojeTemplateResolver<Any> = when (this) {
@@ -38,23 +43,25 @@ class TemplateService {
         TemplateType.Pebble -> zwojePebbleTemplateResolver
     }
 
-    private fun findTemplateEngineFilesInRoots(
+    fun findTemplateEngineFilesInRoots(
         specification: TemplateSpecification,
         moduleTemplates: Map<Module, TemplateType>
-    ) {
+    ): Map<String, List<List<File>>> {
         val moduleAndRoots = moduleTemplates
             .map { (module, _) -> module.name to ModuleRootManager.getInstance(module).contentRoots.map { it.path } }
             .toMap()
 
-        moduleAndRoots
-            .asSequence()
+        return moduleAndRoots
             .filter { it.value.isNotEmpty() }
-            .map { it.value.first() }
-            .map { File(it) }
-            .filter { it.exists() }
-            .map { file -> templateFiles(file, specification) }
-            .filter { it.isNotEmpty() }
-            .toList()
+            .map { entry ->
+                entry.key to entry.value
+                    .map { File(it) }
+                    .filter { it.exists() }
+                    .map { file -> templateFiles(file, specification) }
+                    .filter { it.isNotEmpty() }
+            }
+            .filter { entry -> entry.second.isNotEmpty() }
+            .toMap()
     }
 
     private fun templateFiles(file: File, specification: TemplateSpecification): List<File> =
@@ -77,7 +84,7 @@ class TemplateService {
     }
 }
 
-private data class TemplateSpecification(
+data class TemplateSpecification(
     val ext: String,
     val templatesDir: String,
     val baseDir: String

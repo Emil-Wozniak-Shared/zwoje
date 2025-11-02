@@ -23,4 +23,6 @@ class ZwojeMustacheTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProv
         val template = templates[id] ?: throw TemplateNotFoundException(id)
         return template as ZwojeMustacheTemplate<Any>
     }
+
+    override fun exists(id: String): Boolean = templates[id] != null
 }

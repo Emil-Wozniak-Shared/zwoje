@@ -7,6 +7,7 @@ const val TEMPLATE_NAME = "invoice"
 class SampleTemplateInputData(
     input: InvoiceData
 ) : TemplateInputData<InvoiceData>(input)
+
 data class InvoiceData(
     val name: String,
     val amount: Double,
