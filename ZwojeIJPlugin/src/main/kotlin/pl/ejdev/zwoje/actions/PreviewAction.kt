@@ -9,15 +9,21 @@ import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.project.ProjectManager
-import com.intellij.openapi.ui.Messages
+import com.intellij.openapi.ui.Messages.showErrorDialog
+import com.intellij.openapi.ui.Messages.showWarningDialog
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
 import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.service.HtmlEngineSearchService
 import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService
-import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService.IJTemplateInputData
 import pl.ejdev.zwoje.service.TemplateService
 import pl.ejdev.zwoje.window.ZwojeWindowFactory.Companion.ZWOJE_WINDOW_KEY
+
+private const val ZWOJE_PREVIEW = "Zwoje Preview"
+private const val NO_ACTIVE_PROJECT_FOUND = "No active project found."
+private const val PREVIEW_WINDOW_NOT_INITIALIZED = "Preview window not initialized."
+
+private val supportedTypes = listOf("html", "htm")
 
 class PreviewAction : AnAction() {
     override fun getActionUpdateThread() = ActionUpdateThread.EDT
@@ -25,18 +31,16 @@ class PreviewAction : AnAction() {
     override fun actionPerformed(event: AnActionEvent) {
         val project = event.getData(PROJECT) ?: ProjectManager.getInstance().openProjects.firstOrNull()
         if (project == null) {
-            Messages.showErrorDialog("No active project found.", "Zwoje Preview")
+            showErrorDialog(NO_ACTIVE_PROJECT_FOUND, ZWOJE_PREVIEW)
             return
         }
         val editor = event.getData(EDITOR) ?: FileEditorManager.getInstance(project).selectedTextEditor
         val file = virtualFile(event, project)
-
         if (editor == null || file == null || file.extension !in supportedTypes) {
             return
         }
-
         FileDocumentManager.getInstance().saveDocument(editor.document)
-        showPreview(project, file)
+        showPreview(project, file, editor.document.text)
     }
 
     private fun virtualFile(event: AnActionEvent, project: Project): VirtualFile? {
@@ -50,7 +54,7 @@ class PreviewAction : AnAction() {
         return file
     }
 
-    private fun showPreview(project: Project, file: VirtualFile) {
+    private fun showPreview(project: Project, file: VirtualFile, content: String) {
         val htmlEngineSearchService = project.service<HtmlEngineSearchService>()
         val templateService = project.service<TemplateService>()
         val openHtmlEngineCompileService = project.service<OpenHtmlEngineCompileService>()
@@ -63,16 +67,14 @@ class PreviewAction : AnAction() {
             .firstOrNull()
             ?: return
 
-        val input = IJTemplateInputData(listOf<Any>())
-        val nameWithoutExtension = file.nameWithoutExtension
-        val bytes = openHtmlEngineCompileService.compile(resolver, file.name, input, file.path)
+        val bytes = openHtmlEngineCompileService.compile(resolver, file.name, file.path, content)
 
         val zwojeWindow = project.getUserData(ZWOJE_WINDOW_KEY)
         if (zwojeWindow != null) {
-            zwojeWindow.viewer.loadPdfBytes(bytes, "$nameWithoutExtension.pdf")
-            ToolWindowManager.getInstance(project).getToolWindow("Zwoje Preview")?.show()
+            zwojeWindow.viewer.loadPdfBytes(bytes, "${file.nameWithoutExtension}.pdf")
+            ToolWindowManager.getInstance(project).getToolWindow(ZWOJE_PREVIEW)?.show()
         } else {
-            Messages.showWarningDialog(project, "Preview window not initialized.", "Zwoje Preview")
+            showWarningDialog(project, PREVIEW_WINDOW_NOT_INITIALIZED, ZWOJE_PREVIEW)
         }
     }
 
@@ -82,5 +84,3 @@ class PreviewAction : AnAction() {
         e.presentation.isEnabledAndVisible = isHtmlFile
     }
 }
-
-private val supportedTypes = listOf("html", "htm")

@@ -3,17 +3,11 @@ package pl.ejdev.zwoje.service
 import com.intellij.openapi.components.Service
 import pl.ejdev.zwoje.core.ZwojeEngine
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
-import pl.ejdev.zwoje.core.template.TemplateInputData
-import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
+import pl.ejdev.zwoje.core.template.*
 import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreeMarkerTemplate
-import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreeMarkerTemplateResolver
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplate
-import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateResolver
-import pl.ejdev.zwoje.core.template.kotlinx.ZwojeKotlinHtmlTemplateResolver
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplate
-import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplateResolver
 import pl.ejdev.zwoje.core.template.pebble.ZwojePebbleTemplate
-import pl.ejdev.zwoje.core.template.pebble.ZwojePebbleTemplateResolver
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplate
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 
@@ -21,29 +15,36 @@ import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 class OpenHtmlEngineCompileService {
     private val compileEngine = OpenHtmlToPdfCompileEngine()
 
-    fun compile(
-        resolver: ZwojeTemplateResolver<Any>,
-        id: String,
-        input: IJTemplateInputData,
-        templatePath: String
-    ): ByteArray {
+    fun compile(resolver: ZwojeTemplateResolver<Any>, id: String, templatePath: String, content: String): ByteArray {
+        val templateType = resolver.type
         val engine = ZwojeEngine(compileEngine, resolver)
-        val template = template(resolver, id, templatePath)
+        val template = template(templateType, id, templatePath)
         if (!resolver.exists(id)) {
             resolver.register(id, template)
         }
+        val parser = parser(templateType, id, resolver)
+        val parsed = parser.parse(content)
+        val input = IJTemplateInputData(parsed)
         val bytes = engine.compile(id, input)
         return bytes
     }
 
-    private fun template(resolver: ZwojeTemplateResolver<Any>, id: String, templatePath: String) = when (resolver) {
-        is ZwojeThymeleafTemplateResolver -> IJZwojeThymeleafTemplate(id, templatePath)
-        is ZwojeGroovyMarkupTemplateResolver -> IJZwojeGroovyMarkupTemplate(id)
-        is ZwojeMustacheTemplateResolver -> IJZwojeMustacheTemplate(id)
-        is ZwojeFreeMarkerTemplateResolver -> IJZwojeFreeMarkerTemplate(id)
-        is ZwojePebbleTemplateResolver -> IJZwojePebbleTemplate(id)
-        is ZwojeKotlinHtmlTemplateResolver -> TODO("kotlinx html is not ready")
-        else -> error("Unsupported ${resolver::class.java.simpleName}")
+    private fun parser(
+        templateType: TemplateType,
+        id: String,
+        resolver: ZwojeTemplateResolver<Any>
+    ): ZwojeTemplateParser<Any> = when (templateType) {
+        TemplateType.Thymeleaf -> (resolver as ZwojeThymeleafTemplateResolver).getParser(id)
+        else -> stubTemplateParser
+    }
+
+    private fun template(type: TemplateType, id: String, templatePath: String) = when (type) {
+        TemplateType.Thymeleaf -> IJZwojeThymeleafTemplate(id, templatePath)
+        TemplateType.GroovyTemplate -> IJZwojeGroovyMarkupTemplate(id)
+        TemplateType.Mustache -> IJZwojeMustacheTemplate(id)
+        TemplateType.FreeMarker -> IJZwojeFreeMarkerTemplate(id)
+        TemplateType.Pebble -> IJZwojePebbleTemplate(id)
+        TemplateType.KotlinxHtml -> TODO("kotlinx html is not ready")
     }
 
     class IJZwojeThymeleafTemplate(name: String, templatePath: String) :
@@ -55,4 +56,13 @@ class OpenHtmlEngineCompileService {
     class IJZwojePebbleTemplate(name: String) : ZwojePebbleTemplate<IJTemplateInputData>(name)
 
     class IJTemplateInputData(input: Any) : TemplateInputData<Any>(input)
+
+    private companion object {
+        val stubTemplateParser by lazy {
+            object : ZwojeTemplateParser<Any> {
+                override fun parse(content: String): Set<TemplateVariable> = setOf()
+
+            }
+        }
+    }
 }
