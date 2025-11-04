@@ -21,7 +21,6 @@ class ZwojeWindowFactory  : AbstractWindowFactory() {
             project = project
         )
 
-    companion object {
-        val ZWOJE_WINDOW_KEY = Key.create<ZwojeWindow>("zwoje.window")
-    }
 }
+
+val ZWOJE_WINDOW_KEY = Key.create<ZwojeWindow>("zwoje.window")

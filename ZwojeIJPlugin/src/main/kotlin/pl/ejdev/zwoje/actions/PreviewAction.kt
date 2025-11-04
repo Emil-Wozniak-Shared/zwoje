@@ -13,11 +13,10 @@ import com.intellij.openapi.ui.Messages.showErrorDialog
 import com.intellij.openapi.ui.Messages.showWarningDialog
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
-import pl.ejdev.zwoje.core.template.TemplateProvider
-import pl.ejdev.zwoje.service.HtmlEngineSearchService
 import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService
-import pl.ejdev.zwoje.service.TemplateService
-import pl.ejdev.zwoje.window.ZwojeWindowFactory.Companion.ZWOJE_WINDOW_KEY
+import pl.ejdev.zwoje.service.TemplateResolverService
+import pl.ejdev.zwoje.utils.nameWithExtension
+import pl.ejdev.zwoje.window.ZWOJE_WINDOW_KEY
 
 private const val ZWOJE_PREVIEW = "Zwoje Preview"
 private const val NO_ACTIVE_PROJECT_FOUND = "No active project found."
@@ -55,23 +54,13 @@ class PreviewAction : AnAction() {
     }
 
     private fun showPreview(project: Project, file: VirtualFile, content: String) {
-        val htmlEngineSearchService = project.service<HtmlEngineSearchService>()
-        val templateService = project.service<TemplateService>()
+        val templateResolverService = project.service<TemplateResolverService>()
         val openHtmlEngineCompileService = project.service<OpenHtmlEngineCompileService>()
-        val moduleTemplates = htmlEngineSearchService.getModuleTemplates()
-        val templateResolvers = templateService.templateResolvers(moduleTemplates)
-        val resolver = templateResolvers
-            .asSequence()
-            .filter { if (it is TemplateProvider) it.extension == file.extension else true }
-            .distinct()
-            .firstOrNull()
-            ?: return
-
-        val bytes = openHtmlEngineCompileService.compile(resolver, file.name, file.path, content)
-
         val zwojeWindow = project.getUserData(ZWOJE_WINDOW_KEY)
-        if (zwojeWindow != null) {
-            zwojeWindow.viewer.loadPdfBytes(bytes, "${file.nameWithoutExtension}.pdf")
+        val resolver = templateResolverService.findFor(file) ?: return
+        val bytes = openHtmlEngineCompileService.compile(resolver, file, content)
+        if (zwojeWindow != null && bytes.isSuccess) {
+            zwojeWindow.viewer.loadPdfBytes(bytes.getOrNull()!!, file.nameWithExtension("pdf"))
             ToolWindowManager.getInstance(project).getToolWindow(ZWOJE_PREVIEW)?.show()
         } else {
             showWarningDialog(project, PREVIEW_WINDOW_NOT_INITIALIZED, ZWOJE_PREVIEW)

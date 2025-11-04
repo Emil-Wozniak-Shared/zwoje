@@ -20,8 +20,9 @@ dependencies {
     intellijPlatform {
         create("IC", "2025.1.4.1")
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
-        // bundledPlugin("com.intellij.java")
-
+//         bundledPlugin("com.intellij.java")
+        bundledPlugins("com.intellij.modules.json")
+        implementation("com.google.code.gson:gson:2.10.1")
         implementation("pl.ejdev.zwoje:core:1.0-SNAPSHOT")
         implementation("org.swinglabs:pdf-renderer:1.0.5")
         implementation("org.apache.pdfbox:pdfbox:2.0.30")

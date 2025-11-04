@@ -2,9 +2,10 @@ package pl.ejdev.zwoje.service
 
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.Service.Level
+import com.intellij.openapi.components.service
 import com.intellij.openapi.module.Module
-import com.intellij.openapi.roots.ModuleRootManager
-import com.intellij.openapi.util.NlsSafe
+import com.intellij.openapi.project.Project
+import com.intellij.openapi.vfs.VirtualFile
 import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
@@ -14,10 +15,13 @@ import pl.ejdev.zwoje.core.template.kotlinx.ZwojeKotlinHtmlTemplateResolver
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplateResolver
 import pl.ejdev.zwoje.core.template.pebble.ZwojePebbleTemplateResolver
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
-import java.io.File
 
 @Service(Level.PROJECT)
-class TemplateService {
+class TemplateResolverService(
+    private val project: Project
+) {
+    private val templateTypeService = project.service<TemplateTypeService>()
+    private val htmlEngineSearchService = this.project.service<HtmlEngineSearchService>()
 
     fun templateResolvers(moduleTemplates: Map<Module, TemplateType>): List<ZwojeTemplateResolver<Any>> =
         moduleTemplates.values
@@ -29,9 +33,21 @@ class TemplateService {
                 }
             }
 
-    fun createTemplateSpecification(resolver: ZwojeTemplateResolver<Any>) = when (resolver) {
-        is TemplateProvider -> TemplateSpecification.of(resolver)
-        else -> TemplateSpecification.DEFAULT
+    fun register(resolver: ZwojeTemplateResolver<Any>, id: String, templatePath: String) {
+        val template = templateTypeService.getTemplate(resolver.type, id, templatePath)
+        if (!resolver.exists(id)) {
+            resolver.register(id, template)
+        }
+    }
+
+    fun findFor(virtualFile: VirtualFile): ZwojeTemplateResolver<Any>? {
+        val moduleTemplates = htmlEngineSearchService.getModuleTemplates()
+        val templateResolvers = templateResolvers(moduleTemplates)
+        return templateResolvers
+            .asSequence()
+            .filter { if (it is TemplateProvider) it.extension == virtualFile.extension else true }
+            .distinct()
+            .firstOrNull()
     }
 
     private fun TemplateType.toTemplateResolver(): ZwojeTemplateResolver<Any> = when (this) {
@@ -42,37 +58,6 @@ class TemplateService {
         TemplateType.KotlinxHtml -> zwojeKotlinHtmlTemplateResolver
         TemplateType.Pebble -> zwojePebbleTemplateResolver
     }
-
-    fun findTemplateEngineFilesInRoots(
-        specification: TemplateSpecification,
-        moduleTemplates: Map<Module, TemplateType>
-    ): Map<String, List<List<File>>> {
-        val moduleAndRoots = moduleTemplates
-            .map { (module, _) -> module.name to ModuleRootManager.getInstance(module).contentRoots.map { it.path } }
-            .toMap()
-
-        return moduleAndRoots
-            .filter { it.value.isNotEmpty() }
-            .map { entry ->
-                entry.key to entry.value
-                    .map { File(it) }
-                    .filter { it.exists() }
-                    .map { file -> templateFiles(file, specification) }
-                    .filter { it.isNotEmpty() }
-            }
-            .filter { entry -> entry.second.isNotEmpty() }
-            .toMap()
-    }
-
-    private fun templateFiles(file: File, specification: TemplateSpecification): List<File> =
-        file.listFiles()
-            .asSequence()
-            .filter { it.path.contains(specification.baseDir) }
-            .flatMap { it.listFiles().toList() }
-            .filter { it.name.endsWith(specification.templatesDir) }
-            .flatMap { it.listFiles().toList() }
-            .filterNotNull()
-            .toList()
 
     private companion object {
         private val zwojeThymeleafTemplateResolver by lazy { ZwojeThymeleafTemplateResolver() }
