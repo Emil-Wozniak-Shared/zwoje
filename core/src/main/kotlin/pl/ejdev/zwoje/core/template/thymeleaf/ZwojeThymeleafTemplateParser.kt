@@ -26,9 +26,7 @@ class ZwojeThymeleafTemplateParser<INPUT : Any>(
         val variables = mutableSetOf<ThymeleafVariable>()
 
         // Detect collections used in th:each
-        val eachRegex = Regex("""th:each\s*=\s*"(\s*\w+)\s*:\s*\$\{([^}]+)}""")
         val loopVars = mutableSetOf<String>() // to track local iteration variable names
-
         eachRegex.findAll(content).forEach { match ->
             val loopVar = match.groupValues[1].trim()
             val expr = match.groupValues[2].trim()
@@ -40,7 +38,6 @@ class ZwojeThymeleafTemplateParser<INPUT : Any>(
         }
 
         // Find all normal variable expressions
-        val exprRegex = Regex("""\$\{([^}]+)}|\*\{([^}]+)}""")
         exprRegex.findAll(content).forEach { match ->
             val exprText = match.groups[1]?.value ?: match.groups[2]?.value ?: return@forEach
             val parsedExpression = parser.parseExpression(context, exprText)
@@ -58,5 +55,10 @@ class ZwojeThymeleafTemplateParser<INPUT : Any>(
         }
 
         return variables
+    }
+
+    private companion object {
+        val eachRegex = Regex("""th:each\s*=\s*"(\s*\w+)\s*:\s*\$\{([^}]+)}""")
+        val exprRegex = Regex("""\$\{([^}]+)}|\*\{([^}]+)}""")
     }
 }

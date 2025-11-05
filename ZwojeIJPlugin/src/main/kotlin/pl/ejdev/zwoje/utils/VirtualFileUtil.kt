@@ -20,3 +20,6 @@ internal fun VirtualFile.isSupported(resolver: ZwojeTemplateResolver<Any>): Bool
 
     return this.extension == extension && parent.path.endsWith(templateDir)
 }
+
+internal fun VirtualFile.nameWithExtension(extension: String): String =
+    "${nameWithoutExtension}.${extension}"
