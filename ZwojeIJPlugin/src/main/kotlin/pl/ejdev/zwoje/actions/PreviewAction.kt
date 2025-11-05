@@ -58,13 +58,18 @@ class PreviewAction : AnAction() {
         val openHtmlEngineCompileService = project.service<OpenHtmlEngineCompileService>()
         val zwojeWindow = project.getUserData(ZWOJE_WINDOW_KEY)
         val resolver = templateResolverService.findFor(file) ?: return
-        val bytes = openHtmlEngineCompileService.compile(resolver, file, content)
-        if (zwojeWindow != null && bytes.isSuccess) {
-            zwojeWindow.viewer.loadPdfBytes(bytes.getOrNull()!!, file.nameWithExtension("pdf"))
-            ToolWindowManager.getInstance(project).getToolWindow(ZWOJE_PREVIEW)?.show()
-        } else {
-            showWarningDialog(project, PREVIEW_WINDOW_NOT_INITIALIZED, ZWOJE_PREVIEW)
-        }
+        openHtmlEngineCompileService.compile(resolver, file, content)
+            .onSuccess {
+                if (zwojeWindow != null) {
+                    zwojeWindow.viewer.loadPdfBytes(it, file.nameWithExtension("pdf"))
+                    ToolWindowManager.getInstance(project).getToolWindow(ZWOJE_PREVIEW)?.show()
+                } else {
+                    showWarningDialog(project, PREVIEW_WINDOW_NOT_INITIALIZED, ZWOJE_PREVIEW)
+                }
+            }
+            .onFailure {
+                showErrorDialog(project, "${it.message}", ZWOJE_PREVIEW)
+            }
     }
 
     override fun update(e: AnActionEvent) {

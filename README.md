@@ -12,3 +12,7 @@ To run project locally first publish core ( gradle -> publishToMavenLocal).
 Later to see how plugin behave run it with separate Intellij instance (gradle -> runIde).
 
 Use java version > 21
+
+## How it works
+
+![](./assets/zwoje.png)

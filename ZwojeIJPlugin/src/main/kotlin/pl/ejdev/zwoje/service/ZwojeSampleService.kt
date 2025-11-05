@@ -80,9 +80,9 @@ class ZwojeSampleService(
     }
 
     sealed interface CreateSampleResult {
-        object OK : CreateSampleResult
-        object FileExists : CreateSampleResult
-        class Error(val message: String?) : CreateSampleResult
+        data object OK : CreateSampleResult
+        data object FileExists : CreateSampleResult
+        data class Error(val message: String?) : CreateSampleResult
     }
 
 }
