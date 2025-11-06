@@ -11,7 +11,7 @@ import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplate
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 
-object InvoiceTemplate : ZwojeThymeleafTemplate<InvoiceData>(TEMPLATE_NAME)
+object InvoiceTemplate : ZwojeThymeleafTemplate<InvoiceData>(TEMPLATE_NAME, null)
 
 class ThymeleafTemplateEngineSpec : FreeSpec({
     val compileEngine = OpenHtmlToPdfCompileEngine()

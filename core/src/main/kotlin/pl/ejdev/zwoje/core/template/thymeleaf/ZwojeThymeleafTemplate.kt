@@ -12,15 +12,15 @@ import java.io.File
 
 abstract class ZwojeThymeleafTemplate<INPUT : Any>(
     private val templateName: String,
-    private val templatePath: String? = null
+    override val templatePath: String?
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
-    val engine: TemplateEngine = if (templatePath == null) classpathEngine else templateEngine(templatePath)
+    val engine: TemplateEngine = if (templatePath == null) classpathEngine else templateEngine(templatePath!!)
 
     override fun compile(input: TemplateInputData<INPUT>): String =
         engine.process(templateName, input.toContext())
 
     private fun TemplateInputData<INPUT>.toContext(): Context = Context().apply {
-        getMembers<INPUT>().forEach { (name, value) -> setVariable(name, value) }
+        getMembers().forEach { (name, value) -> setVariable(name, value) }
     }
 
     private companion object {

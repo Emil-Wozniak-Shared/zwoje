@@ -6,4 +6,5 @@ abstract class TemplateInputData<INPUT: Any>(
 
 interface ZwojeTemplate<out TD: TemplateInputData<INPUT>,  INPUT : Any> {
     fun compile(input: @UnsafeVariance TD): String
+    val templatePath: String?
 }

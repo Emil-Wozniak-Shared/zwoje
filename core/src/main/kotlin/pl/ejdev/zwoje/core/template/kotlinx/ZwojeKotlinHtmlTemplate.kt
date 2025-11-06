@@ -9,6 +9,8 @@ import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 
 abstract class ZwojeKotlinHtmlTemplate<INPUT : Any> : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
+    override val templatePath: String? = null
+
     protected fun html(title: String, block: HTML.() -> Unit) = createHTML().html {
         head {
             title(title)

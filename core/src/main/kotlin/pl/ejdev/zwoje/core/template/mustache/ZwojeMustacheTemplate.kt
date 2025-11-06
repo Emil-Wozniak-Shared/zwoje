@@ -8,17 +8,17 @@ import java.io.StringWriter
 import kotlin.text.Charsets.UTF_8
 
 abstract class ZwojeMustacheTemplate<INPUT : Any>(
-    private val resourcePath: String
+    override val templatePath: String? = null
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
     private val mustacheFactory = DefaultMustacheFactory()
 
     override fun compile(input: TemplateInputData<INPUT>): String {
-        val resourceStream = javaClass.classLoader.getResourceAsStream(resourcePath)
-            ?: throw IllegalArgumentException("Template not found at path: $resourcePath")
+        val resourceStream = javaClass.classLoader.getResourceAsStream(templatePath)
+            ?: throw IllegalArgumentException("Template not found at path: $templatePath")
 
         val reader = InputStreamReader(resourceStream, UTF_8)
-        val mustache = mustacheFactory.compile(reader, resourcePath)
+        val mustache = mustacheFactory.compile(reader, templatePath)
         val writer = StringWriter()
         mustache.execute(writer, input.data).flush()
         return writer.toString()
