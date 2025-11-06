@@ -10,9 +10,9 @@ import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 @Service(Service.Level.PROJECT)
 class TemplateParserService {
 
-    fun getParser(id: String, resolver: ZwojeTemplateResolver<Any>): ZwojeTemplateParser<Any> =
+    fun getParser(resolver: ZwojeTemplateResolver<Any>): ZwojeTemplateParser<Any> =
         when (resolver.type) {
-            TemplateType.Thymeleaf -> (resolver as ZwojeThymeleafTemplateResolver).getParser(id)
+            TemplateType.Thymeleaf -> (resolver as ZwojeThymeleafTemplateResolver).getParser()
             else -> stubTemplateParser
         }
 

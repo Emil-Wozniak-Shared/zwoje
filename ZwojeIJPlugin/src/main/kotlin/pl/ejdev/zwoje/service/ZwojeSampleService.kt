@@ -1,5 +1,6 @@
 package pl.ejdev.zwoje.service
 
+import com.google.gson.GsonBuilder
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -7,6 +8,7 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
+import pl.ejdev.zwoje.core.template.TemplateVariable
 import pl.ejdev.zwoje.core.template.VariableType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 import pl.ejdev.zwoje.utils.nameWithExtension
@@ -46,7 +48,7 @@ class ZwojeSampleService(
             file = dir.createChildData(this, fileName)
             val id = virtualFile.name
             templateResolverService.register(resolver, id, virtualFile.path)
-            val content = createContent(id, resolver)
+            val content = createContent(resolver)
             VfsUtil.saveText(file, content)
             return CreateSampleResult.OK
         } catch (e: Exception) {
@@ -55,22 +57,39 @@ class ZwojeSampleService(
         }
     }
 
-    private fun createContent(id: String, resolver: ZwojeTemplateResolver<Any>): String {
-        val parser = templateParserService.getParser(id, resolver)
+    private fun createContent(resolver: ZwojeTemplateResolver<Any>): String {
+        val parser = templateParserService.getParser(resolver)
         val editor = FileEditorManager.getInstance(project).selectedTextEditor!!
         FileDocumentManager.getInstance().saveDocument(editor.document)
         val templateVariables = parser.parse(editor.document.text)
-        val sample = templateVariables.joinToString(",\n\t\t\t", "{\n\t\t\t", "\n\t\t}") {
-            when (it.type) {
-                VariableType.SINGLE -> "\"${it.name}\": \"\""
-                VariableType.COLLECTION -> "\"${it.name}\": []"
+        return nestedJsonWithGson(templateVariables)
+    }
+
+    private fun nestedJsonWithGson(templateVariables: Set<TemplateVariable>): String {
+        val sample = mutableMapOf<String, Any>()
+
+        for (variable in templateVariables) {
+            val parts = variable.name.split(".")
+            var current: MutableMap<String, Any> = sample
+
+            parts.forEachIndexed { index, part ->
+                if (index == parts.lastIndex) {
+                    // Assign value depending on variable type
+                    when (variable.type) {
+                        VariableType.COLLECTION -> current[part] = emptyList<Any>()
+                        VariableType.SINGLE, VariableType.OBJECT -> current[part] = ""
+                    }
+                } else {
+                    // Walk or create nested map
+                    val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
+                    current = next as MutableMap<String, Any>
+                }
             }
         }
-        return """{
-                   |"samples": [
-                   |        $sample
-                   |   ]
-                   |}""".trimMargin()
+
+        val root = mapOf("samples" to listOf(sample))
+        val gson = GsonBuilder().setPrettyPrinting().create()
+        return gson.toJson(root)
     }
 
     sealed interface GetSampleResult {

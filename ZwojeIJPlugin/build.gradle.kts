@@ -50,7 +50,7 @@ tasks {
 }
 
 tasks.named("runIde") {
-    dependsOn(":core:publishToMavenLocal")
+//    dependsOn(":core:publishToMavenLocal")
 }
 
 kotlin {
