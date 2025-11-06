@@ -24,8 +24,5 @@ class ZwojeThymeleafTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateP
 
     override fun exists(id: String): Boolean = templates[id] != null
 
-    fun getParser(id: String): ZwojeTemplateParser<Any> {
-        val template = get(id) as ZwojeThymeleafTemplate<Any>
-        return ZwojeThymeleafTemplateParser(template.engine)
-    }
+    fun getParser(): ZwojeTemplateParser<Any> = ZwojeThymeleafTemplateParser()
 }

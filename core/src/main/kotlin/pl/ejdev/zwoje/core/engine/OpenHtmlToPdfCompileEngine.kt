@@ -1,15 +1,15 @@
 package pl.ejdev.zwoje.core.engine
 
 import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
-import pl.ejdev.zwoje.core.engine.PdfCompileEngine
 import java.io.ByteArrayOutputStream
+import java.io.File
 
 class OpenHtmlToPdfCompileEngine : PdfCompileEngine() {
-
-    override fun compile(template: String): ByteArray = ByteArrayOutputStream().use { stream ->
+    override fun compile(compileData: CompileData): ByteArray = ByteArrayOutputStream().use { stream ->
+        val baseDir = compileData.templatePath?.let {  File(it).toURI().toString() }
         PdfRendererBuilder().run {
             useFastMode()
-            withHtmlContent(template, null)
+            withHtmlContent(compileData.html, baseDir)
             toStream(stream)
             run()
         }

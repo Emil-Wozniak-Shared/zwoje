@@ -9,13 +9,13 @@ import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.StringWriter
 
 abstract class ZwojePebbleTemplate<INPUT : Any>(
-    private val templatePath: String
+    override val templatePath: String
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
     override fun compile(input: TemplateInputData<INPUT>): String {
         val template = engine.getTemplate(templatePath)
         val writer = StringWriter()
-        template.evaluate(writer, input.getMembers<INPUT>().toMap())
+        template.evaluate(writer, input.getMembers().toMap())
         return writer.toString()
     }
 

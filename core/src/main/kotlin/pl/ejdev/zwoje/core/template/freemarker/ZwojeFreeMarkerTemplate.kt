@@ -7,8 +7,10 @@ import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import java.io.StringWriter
 
 abstract class ZwojeFreeMarkerTemplate<INPUT : Any>(
-    private val templateName: String
+    val templateName: String
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
+    override val templatePath: String? = null
+
     override fun compile(input: TemplateInputData<INPUT>): String {
         val template = cfg.getTemplate("$templateName.ftl")
         val writer = StringWriter()

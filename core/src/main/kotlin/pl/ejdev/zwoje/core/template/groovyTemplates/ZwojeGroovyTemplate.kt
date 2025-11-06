@@ -8,7 +8,7 @@ import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.StringWriter
 
 abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
-    private val templatePath: String
+    override val templatePath: String
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
     companion object {
@@ -26,7 +26,7 @@ abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
 
         val writer = StringWriter()
         template
-            .make(input.getMembers<INPUT>().toMap())
+            .make(input.getMembers().toMap())
             .writeTo(writer)
         return writer.toString()
     }

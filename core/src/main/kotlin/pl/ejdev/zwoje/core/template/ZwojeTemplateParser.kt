@@ -1,6 +1,6 @@
 package pl.ejdev.zwoje.core.template
 
-enum class VariableType { SINGLE, COLLECTION }
+enum class VariableType { SINGLE, COLLECTION, OBJECT }
 
 open class TemplateVariable(
     val name: String,
