@@ -58,7 +58,7 @@ class ZwojeSampleService(
     }
 
     private fun createContent(resolver: ZwojeTemplateResolver<Any>): String {
-        val parser = templateParserService.getParser(resolver)
+        val parser = templateParserService.getParser(resolver.type)
         val editor = FileEditorManager.getInstance(project).selectedTextEditor!!
         FileDocumentManager.getInstance().saveDocument(editor.document)
         val templateVariables = parser.parse(editor.document.text)
