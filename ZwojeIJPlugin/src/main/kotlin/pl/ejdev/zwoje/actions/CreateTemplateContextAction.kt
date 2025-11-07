@@ -1,7 +1,9 @@
-package pl.ejdev.zwoje.components
+package pl.ejdev.zwoje.actions
 
+import com.intellij.openapi.actionSystem.ActionUpdateThread
+import com.intellij.openapi.actionSystem.AnAction
+import com.intellij.openapi.actionSystem.AnActionEvent
 import com.intellij.openapi.command.WriteCommandAction
-import com.intellij.openapi.components.service
 import com.intellij.openapi.fileEditor.FileDocumentManager
 import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
@@ -12,27 +14,22 @@ import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 import pl.ejdev.zwoje.service.TemplateResolverService
 import pl.ejdev.zwoje.service.ZwojeSampleService
 import pl.ejdev.zwoje.utils.isSupported
-import javax.swing.JButton
-import kotlin.concurrent.thread
 
 private const val TITLE = "Samples Button"
 private const val NO_SUITABLE_TEMPLATE_RESOLVER = "No suitable template resolver."
 private const val PLEASE_OPEN_TEMPLATE_FILE = "Please open template file."
 private const val SELECTED_FILE_IS_NOT_SUPPORTED = "Selected file is not supported."
 
-internal class CreateContextButton(
-    private val project: Project
-) : JButton("Create context") {
-    private val templateResolverService = project.service<TemplateResolverService>()
-    private val zwojeSampleService = project.service<ZwojeSampleService>()
+class CreateTemplateContextAction(
+    private val project: Project,
+    private val zwojeSampleService: ZwojeSampleService,
+    private val templateResolverService: TemplateResolverService
+) : AnAction() {
+    override fun getActionUpdateThread() = ActionUpdateThread.EDT
 
-    init {
-        addActionListener {
-            thread {
-                findContext()?.let { (root, resolver) ->
-                    createZwojeContext(root, resolver)
-                }
-            }
+    override fun actionPerformed(event: AnActionEvent) {
+        findContext()?.let { (root, resolver) ->
+            createZwojeContext(root, resolver)
         }
     }
 
@@ -42,7 +39,7 @@ internal class CreateContextButton(
             showWarningDialog(project, PLEASE_OPEN_TEMPLATE_FILE, TITLE)
             return null
         }
-        val resolver = templateResolverService.findFor(rootVirtualFile)
+        val resolver: ZwojeTemplateResolver<Any>? = templateResolverService.findFor(rootVirtualFile)
         if (resolver == null) {
             showWarningDialog(project, NO_SUITABLE_TEMPLATE_RESOLVER, TITLE)
             return null

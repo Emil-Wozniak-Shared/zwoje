@@ -14,7 +14,6 @@ import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 import pl.ejdev.zwoje.service.ZwojeSampleService.GetSampleResult
 import kotlin.Result.Companion.failure
-import kotlin.Result.Companion.success
 
 private const val TITLE = "OpenHtmlEngineCompileService"
 
