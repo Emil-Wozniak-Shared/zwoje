@@ -24,5 +24,4 @@ class ZwojeThymeleafTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateP
 
     override fun exists(id: String): Boolean = templates[id] != null
 
-    fun getParser(): ZwojeTemplateParser<Any> = ZwojeThymeleafTemplateParser()
 }
