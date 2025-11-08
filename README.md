@@ -107,6 +107,8 @@ Context (index.json):
 Preview Output (inside IntelliJ):
 Displays rendered HTML and PDF side-by-side — great for template debugging and design validation.
 
+![preview](./assets/zwoje.png)
+
 ### 🧱 Architecture Diagram
 
 
