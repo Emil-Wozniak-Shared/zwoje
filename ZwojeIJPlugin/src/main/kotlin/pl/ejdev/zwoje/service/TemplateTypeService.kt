@@ -14,19 +14,26 @@ class TemplateTypeService {
 
     fun getTemplate(type: TemplateType, id: String, templatePath: String) = when (type) {
         TemplateType.Thymeleaf -> IJZwojeThymeleafTemplate(id, templatePath)
-        TemplateType.GroovyTemplate -> IJZwojeGroovyMarkupTemplate(id)
-        TemplateType.Mustache -> IJZwojeMustacheTemplate(id)
-        TemplateType.FreeMarker -> IJZwojeFreeMarkerTemplate(id)
-        TemplateType.Pebble -> IJZwojePebbleTemplate(id)
+        TemplateType.GroovyTemplate -> IJZwojeGroovyMarkupTemplate(id, templatePath)
+        TemplateType.Mustache -> IJZwojeMustacheTemplate(id, templatePath)
+        TemplateType.FreeMarker -> IJZwojeFreeMarkerTemplate(id, templatePath)
+        TemplateType.Pebble -> IJZwojePebbleTemplate(id, templatePath)
         TemplateType.KotlinxHtml -> TODO("kotlinx html is not ready")
     }
 
     class IJZwojeThymeleafTemplate(name: String, templatePath: String) :
         ZwojeThymeleafTemplate<IJTemplateInputData>(name, templatePath)
 
-    class IJZwojeGroovyMarkupTemplate(name: String) : ZwojeGroovyMarkupTemplate<IJTemplateInputData>(name)
-    class IJZwojeMustacheTemplate(name: String) : ZwojeMustacheTemplate<IJTemplateInputData>(name)
-    class IJZwojeFreeMarkerTemplate(name: String) : ZwojeFreeMarkerTemplate<IJTemplateInputData>(name)
-    class IJZwojePebbleTemplate(name: String) : ZwojePebbleTemplate<IJTemplateInputData>(name)
+    class IJZwojeGroovyMarkupTemplate(name: String, templatePath: String) :
+        ZwojeGroovyMarkupTemplate<IJTemplateInputData>(templatePath)
+
+    class IJZwojeMustacheTemplate(name: String, templatePath: String) :
+        ZwojeMustacheTemplate<IJTemplateInputData>(templatePath)
+
+    class IJZwojeFreeMarkerTemplate(name: String, templatePath: String) :
+        ZwojeFreeMarkerTemplate<IJTemplateInputData>(templatePath)
+
+    class IJZwojePebbleTemplate(name: String, templatePath: String) :
+        ZwojePebbleTemplate<IJTemplateInputData>(templatePath)
 
 }

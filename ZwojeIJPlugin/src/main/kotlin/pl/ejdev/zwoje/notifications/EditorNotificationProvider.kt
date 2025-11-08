@@ -9,23 +9,26 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
+import pl.ejdev.zwoje.actions.CreateTemplateContextAction
 import pl.ejdev.zwoje.actions.GeneratePdfAction
 import pl.ejdev.zwoje.actions.PreviewAction
-import pl.ejdev.zwoje.actions.CreateTemplateContextAction
 import pl.ejdev.zwoje.service.TemplateResolverService
+import pl.ejdev.zwoje.service.ZwojeFileSupportService
 import pl.ejdev.zwoje.service.ZwojeSampleService
 import java.util.function.Function
 import javax.swing.JComponent
 
 class ZwojeEditorNotificationProvider : EditorNotificationProvider {
+
     override fun collectNotificationData(
         project: Project,
         file: VirtualFile
     ): Function<in FileEditor, out JComponent?>? {
         val zwojeSampleService = project.service<ZwojeSampleService>()
         val templateResolverService = project.service<TemplateResolverService>()
+        val zwojeFileSupportService = project.service<ZwojeFileSupportService>()
 
-        return if (file.fileType.name != "HTML") null
+        return if (!zwojeFileSupportService.isSupported(file.extension ?: "")) null
         else Function { _: FileEditor ->
             val panel = EditorNotificationPanel()
             panel.text = "Preview or generate PDF"
