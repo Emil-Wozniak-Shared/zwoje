@@ -65,24 +65,54 @@ class ZwojeSampleService(
         return nestedJsonWithGson(templateVariables)
     }
 
+
     private fun nestedJsonWithGson(templateVariables: Set<TemplateVariable>): String {
         val sample = mutableMapOf<String, Any>()
 
         for (variable in templateVariables) {
-            val parts = variable.name.split(".")
-            var current: MutableMap<String, Any> = sample
+            if (variable.type == VariableType.COLLECTION && variable.children.isNotEmpty()) {
+                // Handle collection with known item properties
+                val parts = variable.name.split(".")
+                var current: MutableMap<String, Any> = sample
 
-            parts.forEachIndexed { index, part ->
-                if (index == parts.lastIndex) {
-                    // Assign value depending on variable type
-                    when (variable.type) {
-                        VariableType.COLLECTION -> current[part] = emptyList<Any>()
-                        VariableType.SINGLE, VariableType.OBJECT -> current[part] = ""
-                    }
-                } else {
-                    // Walk or create nested map
+                // Navigate to the collection's parent
+                parts.dropLast(1).forEach { part ->
                     val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
                     current = next as MutableMap<String, Any>
+                }
+
+                // Create the collection with sample item
+                val collectionKey = parts.last()
+                val itemSample = mutableMapOf<String, Any>()
+
+                // Add all item properties
+                variable.children.forEach { child ->
+                    val childParts = child.name.split(".")
+                    var itemCurrent: MutableMap<String, Any> = itemSample
+
+                    childParts.forEachIndexed { index, part ->
+                        if (index == childParts.lastIndex) {
+                            itemCurrent[part] = ""
+                        } else {
+                            val next = itemCurrent.getOrPut(part) { mutableMapOf<String, Any>() }
+                            itemCurrent = next as MutableMap<String, Any>
+                        }
+                    }
+                }
+
+                current[collectionKey] = listOf(itemSample)
+            } else if (variable.type != VariableType.COLLECTION) {
+                // Handle regular variables
+                val parts = variable.name.split(".")
+                var current: MutableMap<String, Any> = sample
+
+                parts.forEachIndexed { index, part ->
+                    if (index == parts.lastIndex) {
+                        current[part] = ""
+                    } else {
+                        val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
+                        current = next as MutableMap<String, Any>
+                    }
                 }
             }
         }

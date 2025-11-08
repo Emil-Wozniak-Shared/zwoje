@@ -31,7 +31,7 @@ class TemplateTypeService {
         ZwojeMustacheTemplate<IJTemplateInputData>(templatePath)
 
     class IJZwojeFreeMarkerTemplate(name: String, templatePath: String) :
-        ZwojeFreeMarkerTemplate<IJTemplateInputData>(templatePath)
+        ZwojeFreeMarkerTemplate<IJTemplateInputData>(name, templatePath)
 
     class IJZwojePebbleTemplate(name: String, templatePath: String) :
         ZwojePebbleTemplate<IJTemplateInputData>(templatePath)

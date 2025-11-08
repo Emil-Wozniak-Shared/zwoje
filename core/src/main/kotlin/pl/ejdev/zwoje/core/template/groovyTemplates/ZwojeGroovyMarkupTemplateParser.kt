@@ -7,7 +7,7 @@ import pl.ejdev.zwoje.core.template.ZwojeTemplateParser
 class GroovyMarkupVariable(
     name: String,
     type: VariableType
-) : TemplateVariable(name, type)
+) : TemplateVariable(name, type, emptyList())
 
 object ZwojeGroovyMarkupTemplateParser : ZwojeTemplateParser() {
     override fun parse(content: String): Set<TemplateVariable> {

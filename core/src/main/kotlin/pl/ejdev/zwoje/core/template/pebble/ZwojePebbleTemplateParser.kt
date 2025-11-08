@@ -3,33 +3,95 @@ package pl.ejdev.zwoje.core.template.pebble
 import pl.ejdev.zwoje.core.template.TemplateVariable
 import pl.ejdev.zwoje.core.template.VariableType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateParser
-
 class PebbleVariable(
     name: String,
-    type: VariableType
-) : TemplateVariable(name, type)
+    type: VariableType,
+    children: List<TemplateVariable> = emptyList()
+) : TemplateVariable(name, type, children)
+
+data class PebbleCollectionInfo(
+    val collectionName: String,
+    val itemProperties: MutableSet<String> = mutableSetOf()
+)
 
 object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
-    override fun parse(content: String): Set<TemplateVariable> =
-        extract(content) { variables ->
-            val text = this.outerHtml()
+    override fun parse(content: String): Set<TemplateVariable> {
+        val variables = mutableSetOf<TemplateVariable>()
+        val collections = mutableMapOf<String, PebbleCollectionInfo>()
+        val loopContexts = mutableMapOf<String, String>() // iterVar -> collectionVar
 
-            // Handle {{ ... }} expressions
-            extractExpressions(text)
-                .filter { it !in variables.map { v -> v.name } }
-                .forEach { expr ->
-                    val type = detectType(expr)
-                    variables.add(PebbleVariable(expr, type))
-                }
+        val text = content
 
-            // Handle {% ... %} directives
-            extractDirectives(text)
-                .filter { it !in variables.map { v -> v.name } }
-                .forEach { expr ->
-                    val type = detectType(expr)
-                    variables.add(PebbleVariable(expr, type))
+        // First pass: identify {% for ... in ... %} loops
+        extractDirectives(text).forEach { directive ->
+            if (directive.startsWith("for ")) {
+                // Parse: {% for item in items %} or {% for item in invoice.items %}
+                val parts = directive.removePrefix("for ").split(" in ")
+                if (parts.size == 2) {
+                    val iterVar = parts[0].trim()
+                    val collectionVar = parts[1].trim()
+                    loopContexts[iterVar] = collectionVar
+                    collections[collectionVar] = PebbleCollectionInfo(collectionVar)
                 }
+            }
         }
+
+        // Second pass: process all expressions and directives
+        extractExpressions(text).forEach { expr ->
+            val cleanExpr = cleanExpression(expr)
+            if (cleanExpr.isEmpty()) return@forEach
+
+            val firstPart = cleanExpr.split(".").first()
+
+            if (firstPart in loopContexts) {
+                // This is an item property - add to collection
+                val collectionVar = loopContexts[firstPart]!!
+                val remainingPath = if (cleanExpr.contains(".")) {
+                    cleanExpr.substringAfter(".")
+                } else {
+                    // Single variable like {{ item }} - skip it
+                    return@forEach
+                }
+
+                if (remainingPath.isNotEmpty()) {
+                    collections[collectionVar]?.itemProperties?.add(remainingPath)
+                }
+            } else if (cleanExpr !in collections.keys) {
+                // Regular variable
+                if (cleanExpr !in variables.map { it.name }) {
+                    variables.add(PebbleVariable(cleanExpr, detectType(cleanExpr)))
+                }
+            }
+        }
+
+        // Process directives for additional variables (like {% if condition %})
+        extractDirectives(text).forEach { directive ->
+            if (directive.startsWith("if ") || directive.startsWith("elseif ")) {
+                // Extract expression from if/elseif
+                val exprPart = directive.removePrefix("if ").removePrefix("elseif ").trim()
+                val cleanExpr = cleanExpression(exprPart)
+
+                if (cleanExpr.isNotEmpty() && cleanExpr !in variables.map { it.name } && cleanExpr !in collections.keys) {
+                    val firstPart = cleanExpr.split(".").first()
+                    if (firstPart !in loopContexts) {
+                        variables.add(PebbleVariable(cleanExpr, detectType(cleanExpr)))
+                    }
+                }
+            }
+            // Note: {% for ... %} directives are already processed in first pass
+        }
+
+        // Add collections with their children
+        collections.forEach { (collectionName, info) ->
+            variables.add(PebbleVariable(
+                collectionName,
+                VariableType.COLLECTION,
+                info.itemProperties.map { PebbleVariable(it, VariableType.OBJECT) }
+            ))
+        }
+
+        return variables
+    }
 
     /**
      * Extracts Pebble/Twig-style {{ ... }} expressions
@@ -82,22 +144,45 @@ object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
     }
 
     /**
+     * Cleans expression by removing filters and operators
+     * Example: "user.name | upper" -> "user.name"
+     * Example: "items | length" -> "items"
+     */
+    private fun cleanExpression(expr: String): String {
+        // Remove everything after pipe (filters)
+        var cleaned = expr.split("|")[0].trim()
+
+        // Remove comparison operators and their right-hand side
+        operators.forEach {
+            if (cleaned.contains(it)) {
+                cleaned = cleaned.substringBefore(it).trim()
+            }
+        }
+
+        // Remove method calls
+        cleaned = cleaned.split("(")[0].trim()
+
+        // Remove quotes for string literals
+        if ((cleaned.startsWith("\"") && cleaned.endsWith("\"")) ||
+            (cleaned.startsWith("'") && cleaned.endsWith("'"))) {
+            return ""
+        }
+
+        // Remove numeric literals
+        if (cleaned.toIntOrNull() != null || cleaned.toDoubleOrNull() != null) {
+            return ""
+        }
+
+        return cleaned
+    }
+
+    /**
      * Determines variable type based on Pebble syntax.
      */
-    private fun detectType(expression: String): VariableType {
-        return when {
-            expression.startsWith("for ") -> VariableType.COLLECTION
-            expression.startsWith("if ") ||
-                    expression.startsWith("elseif ") ||
-                    expression.startsWith("else") -> VariableType.SINGLE
-
-            expression.startsWith("include ") ||
-                    expression.startsWith("import ") ||
-                    expression.startsWith("macro ") -> VariableType.OBJECT
-
-            expression.contains(" in ") -> VariableType.COLLECTION
-            expression.contains('.') -> VariableType.OBJECT
-            else -> VariableType.SINGLE
-        }
+    private fun detectType(expression: String): VariableType = when {
+        expression.contains('.') -> VariableType.OBJECT
+        else -> VariableType.SINGLE
     }
+
+    private val operators = listOf(" == ", " != ", " > ", " < ", " >= ", " <= ", " and ", " or ")
 }

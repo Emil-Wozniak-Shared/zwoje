@@ -6,7 +6,8 @@ enum class VariableType { SINGLE, COLLECTION, OBJECT }
 
 open class TemplateVariable(
     val name: String,
-    val type: VariableType
+    val type: VariableType,
+    val children: List<TemplateVariable>
 )
 
 abstract class ZwojeTemplateParser {

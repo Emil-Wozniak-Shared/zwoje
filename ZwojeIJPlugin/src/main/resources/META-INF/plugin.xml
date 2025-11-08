@@ -12,8 +12,8 @@
         <toolWindow
                 id="Zwoje IJ"
                 factoryClass="pl.ejdev.zwoje.window.ZwojeWindowFactory"
+                icon="/icons/favicon.svg"
         />
-<!--                icon="/icons/favicon.svg"-->
         <editorNotificationProvider implementation="pl.ejdev.zwoje.notifications.ZwojeEditorNotificationProvider"/>
     </extensions>
 </idea-plugin>

@@ -3,23 +3,75 @@ package pl.ejdev.zwoje.core.template.mustache
 import pl.ejdev.zwoje.core.template.TemplateVariable
 import pl.ejdev.zwoje.core.template.VariableType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateParser
+
 class MustacheVariable(
     name: String,
-    type: VariableType
-) : TemplateVariable(name, type)
+    type: VariableType,
+    children: List<TemplateVariable> = emptyList()
+) : TemplateVariable(name, type, children)
+
+data class MustacheCollectionInfo(
+    val collectionName: String,
+    val itemProperties: MutableSet<String> = mutableSetOf()
+)
 
 object ZwojeMustacheTemplateParser : ZwojeTemplateParser() {
-    override fun parse(content: String): Set<TemplateVariable> =
-        extract(content) { variables ->
-            // Mustache expressions can appear anywhere in the text content or attributes
-            val text = this.outerHtml() // safer than text() since it includes all markup
-            extractExpressions(text)
-                .filter { (_, expr) -> expr !in variables.map { it.name } }
-                .forEach { (prefix, expr) ->
-                    val type = detectType(prefix, expr)
-                    variables.add(MustacheVariable(expr, type))
+    override fun parse(content: String): Set<TemplateVariable> {
+        val variables = mutableSetOf<TemplateVariable>()
+        val collections = mutableMapOf<String, MustacheCollectionInfo>()
+        val activeCollections = mutableListOf<String>() // Stack to track nested sections
+
+        val expressions = extractExpressions(content)
+
+        expressions.forEach { (prefix, expr) ->
+            when (prefix) {
+                "#" -> {
+                    // Section start - this is a collection
+                    activeCollections.add(expr)
+                    collections[expr] = MustacheCollectionInfo(expr)
                 }
+                "/" -> {
+                    // Section end - pop from stack
+                    if (activeCollections.isNotEmpty() && activeCollections.last() == expr) {
+                        activeCollections.removeAt(activeCollections.lastIndex)
+                    }
+                }
+                "^" -> {
+                    // Inverted section (boolean check)
+                    if (expr !in variables.map { it.name } && expr !in collections.keys) {
+                        variables.add(MustacheVariable(expr, VariableType.SINGLE))
+                    }
+                }
+                else ->
+                    // Regular variable or property access
+                    if (activeCollections.isNotEmpty()) {
+                        // We're inside a collection section
+                        val currentCollection = activeCollections.last()
+
+                        // In Mustache, inside {{#invoice.items}}, {{name}} refers to item.name
+                        // We need to add this as a property to the collection
+                        collections[currentCollection]?.itemProperties?.add(expr)
+                    } else {
+                        // Regular variable outside any collection
+                        if (expr !in variables.map { it.name } && expr !in collections.keys) {
+                            val type = detectType("", expr)
+                            variables.add(MustacheVariable(expr, type))
+                        }
+                    }
+            }
         }
+
+        // Add collection variables with their item properties
+        collections.forEach { (collectionName, info) ->
+            variables.add(MustacheVariable(
+                collectionName,
+                VariableType.COLLECTION,
+                info.itemProperties.map { MustacheVariable(it, VariableType.OBJECT) }
+            ))
+        }
+
+        return variables
+    }
 
     /**
      * Extracts Mustache-style expressions from the given text.

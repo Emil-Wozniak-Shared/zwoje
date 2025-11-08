@@ -9,7 +9,7 @@ import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplate
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplateResolver
 
-object InvoiceTemplate : ZwojeMustacheTemplate<InvoiceData>("templates/invoice.mustache")
+object InvoiceTemplate : ZwojeMustacheTemplate<InvoiceData>("invoice.mustache")
 
 private const val TEMPLATE_NAME = "invoice"
 

@@ -1,5 +1,6 @@
 package pl.ejdev.zwoje.notifications
 
+import com.intellij.icons.AllIcons
 import com.intellij.openapi.actionSystem.ActionUiKind.Companion.POPUP
 import com.intellij.openapi.actionSystem.AnActionEvent.createEvent
 import com.intellij.openapi.actionSystem.DataContext.EMPTY_CONTEXT
@@ -9,6 +10,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.ui.EditorNotificationPanel
 import com.intellij.ui.EditorNotificationProvider
+import pl.ejdev.zwoje.ZwojeIcon
 import pl.ejdev.zwoje.actions.CreateTemplateContextAction
 import pl.ejdev.zwoje.actions.GeneratePdfAction
 import pl.ejdev.zwoje.actions.PreviewAction
@@ -31,13 +33,14 @@ class ZwojeEditorNotificationProvider : EditorNotificationProvider {
         return if (!zwojeFileSupportService.isSupported(file.extension ?: "")) null
         else Function { _: FileEditor ->
             val panel = EditorNotificationPanel()
-            panel.text = "Preview or generate PDF"
+            panel.text = ""
+            panel.icon(ZwojeIcon.ico)
             panel.createActionLabel("Create context") {
                 val action = CreateTemplateContextAction(project, zwojeSampleService, templateResolverService)
                 val event = createEvent(action, EMPTY_CONTEXT, null, "", POPUP, null)
                 action.actionPerformed(event)
             }
-            panel.createActionLabel("Preview in Zwoje") {
+            panel.createActionLabel("Preview") {
                 val action = PreviewAction()
                 val event = createEvent(action, EMPTY_CONTEXT, null, "", POPUP, null)
                 action.actionPerformed(event)
