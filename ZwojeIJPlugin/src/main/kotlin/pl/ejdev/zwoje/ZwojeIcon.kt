@@ -5,5 +5,5 @@ import javax.swing.Icon
 
 object ZwojeIcon {
 
-    @JvmField val first: Icon = IconLoader.getIcon("/icons/first.ico", javaClass)
+    @JvmField val ico: Icon = IconLoader.getIcon("/icons/favicon.svg", javaClass)
 }
