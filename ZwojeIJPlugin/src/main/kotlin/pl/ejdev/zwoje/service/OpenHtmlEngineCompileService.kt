@@ -24,7 +24,7 @@ class OpenHtmlEngineCompileService(
     private val templateResolverService = project.service<TemplateResolverService>()
     private val zwojeSampleService = project.service<ZwojeSampleService>()
     private val compileEngine = OpenHtmlToPdfCompileEngine()
-    private val gson = Gson()
+    private val jsonParseService = project.service<JsonParseService>()
 
     private val engines: MutableMap<TemplateType, ZwojeEngine> = mutableMapOf()
 
@@ -60,10 +60,8 @@ class OpenHtmlEngineCompileService(
         return engine
     }
 
-    private fun parseJsonFileToObject(content: String): List<Any>? {
-        val json = gson.fromJson(content, Data::class.java)
-        return json.samples.takeIf { it.isNotEmpty() }
-    }
+    private fun parseJsonFileToObject(content: String): List<Any>? =
+        jsonParseService.parse<Data>(content).samples.takeIf { it.isNotEmpty() }
 
     class IJTemplateInputData(input: Any) : TemplateInputData<Any>(input)
 
