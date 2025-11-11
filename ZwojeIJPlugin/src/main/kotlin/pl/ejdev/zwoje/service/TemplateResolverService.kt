@@ -24,14 +24,12 @@ class TemplateResolverService(
     private val htmlEngineSearchService = this.project.service<HtmlEngineSearchService>()
 
     fun templateResolvers(moduleTemplates: Map<Module, TemplateType>): List<ZwojeTemplateResolver<Any>> =
-        moduleTemplates.values
-            .map { type -> type.toTemplateResolver() }
-            .also {
-                when (it) {
-                    is TemplateProvider -> TemplateSpecification.of(it)
-                    else -> TemplateSpecification.DEFAULT
-                }
-            }
+        moduleTemplates.values.map { type -> type.toTemplateResolver() }
+
+    fun<T: Any> toSpecification(resolver: ZwojeTemplateResolver<T>): TemplateSpecification = when (resolver) {
+        is TemplateProvider -> TemplateSpecification.of(resolver)
+        else -> TemplateSpecification.DEFAULT
+    }
 
     fun register(resolver: ZwojeTemplateResolver<Any>, id: String, templatePath: String) {
         val template = templateTypeService.getTemplate(resolver.type, id, templatePath)
@@ -74,6 +72,7 @@ data class TemplateSpecification(
     val templatesDir: String,
     val baseDir: String
 ) {
+
     companion object {
         private const val DEFAULT_EXT = "html"
         private const val DEFAULT_RESOURCES = "src/main/resources"
