@@ -23,7 +23,7 @@ class TemplateParserService {
             else -> stubTemplateParser
         }
 
-    private companion object {
+    companion object {
         val stubTemplateParser by lazy {
             object : ZwojeTemplateParser() {
                 override fun parse(content: String): Set<TemplateVariable> = setOf()
