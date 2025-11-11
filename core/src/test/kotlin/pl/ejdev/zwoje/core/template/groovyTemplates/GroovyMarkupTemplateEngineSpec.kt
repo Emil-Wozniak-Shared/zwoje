@@ -1,4 +1,4 @@
-package pl.ejdev.zwoje.core.groovyTemplates
+package pl.ejdev.zwoje.core.template.groovyTemplates
 
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.shouldNotBe
@@ -7,11 +7,6 @@ import pl.ejdev.zwoje.core.common.InvoiceData
 import pl.ejdev.zwoje.core.common.SampleTemplateInputData
 import pl.ejdev.zwoje.core.common.TEMPLATE_NAME
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
-import pl.ejdev.zwoje.core.template.TemplateInputData
-import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplate
-import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateResolver
-import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplate
-import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 
 object InvoiceTemplate : ZwojeGroovyMarkupTemplate<InvoiceData>("templates/invoice.gtmpl")
 

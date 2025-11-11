@@ -1,8 +1,18 @@
 package pl.ejdev.zwoje.core.template.pebble
 
+import pl.ejdev.zwoje.core.template.DOUBLE_CLOSE_BRACKETS
+import pl.ejdev.zwoje.core.template.DOUBLE_OPEN_BRACKETS
 import pl.ejdev.zwoje.core.template.TemplateVariable
 import pl.ejdev.zwoje.core.template.VariableType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateParser
+
+private const val FOR = "for "
+private const val IN = " in "
+private const val IF = "if "
+private const val ELSEIF = "elseif "
+private const val DOT = "."
+private const val END_FOR_START = "end"
+
 class PebbleVariable(
     name: String,
     type: VariableType,
@@ -24,9 +34,9 @@ object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
 
         // First pass: identify {% for ... in ... %} loops
         extractDirectives(text).forEach { directive ->
-            if (directive.startsWith("for ")) {
+            if (directive.startsWith(FOR)) {
                 // Parse: {% for item in items %} or {% for item in invoice.items %}
-                val parts = directive.removePrefix("for ").split(" in ")
+                val parts = directive.removePrefix(FOR).split(IN)
                 if (parts.size == 2) {
                     val iterVar = parts[0].trim()
                     val collectionVar = parts[1].trim()
@@ -41,13 +51,13 @@ object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
             val cleanExpr = cleanExpression(expr)
             if (cleanExpr.isEmpty()) return@forEach
 
-            val firstPart = cleanExpr.split(".").first()
+            val firstPart = cleanExpr.split(DOT).first()
 
             if (firstPart in loopContexts) {
                 // This is an item property - add to collection
                 val collectionVar = loopContexts[firstPart]!!
-                val remainingPath = if (cleanExpr.contains(".")) {
-                    cleanExpr.substringAfter(".")
+                val remainingPath = if (cleanExpr.contains(DOT)) {
+                    cleanExpr.substringAfter(DOT)
                 } else {
                     // Single variable like {{ item }} - skip it
                     return@forEach
@@ -66,13 +76,13 @@ object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
 
         // Process directives for additional variables (like {% if condition %})
         extractDirectives(text).forEach { directive ->
-            if (directive.startsWith("if ") || directive.startsWith("elseif ")) {
+            if (directive.startsWith(IF) || directive.startsWith(ELSEIF)) {
                 // Extract expression from if/elseif
-                val exprPart = directive.removePrefix("if ").removePrefix("elseif ").trim()
+                val exprPart = directive.removePrefix(IF).removePrefix(ELSEIF).trim()
                 val cleanExpr = cleanExpression(exprPart)
 
                 if (cleanExpr.isNotEmpty() && cleanExpr !in variables.map { it.name } && cleanExpr !in collections.keys) {
-                    val firstPart = cleanExpr.split(".").first()
+                    val firstPart = cleanExpr.split(DOT).first()
                     if (firstPart !in loopContexts) {
                         variables.add(PebbleVariable(cleanExpr, detectType(cleanExpr)))
                     }
@@ -102,10 +112,10 @@ object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
         var i = 0
 
         while (i < value.length) {
-            val start = value.indexOf("{{", i)
+            val start = value.indexOf(DOUBLE_OPEN_BRACKETS, i)
             if (start == -1) break
 
-            val end = value.indexOf("}}", start + 2)
+            val end = value.indexOf(DOUBLE_CLOSE_BRACKETS, start + 2)
             if (end == -1) break
 
             val expr = value.substring(start + 2, end).trim()
@@ -132,7 +142,7 @@ object ZwojePebbleTemplateParser : ZwojeTemplateParser() {
             if (end == -1) break
 
             val inner = value.substring(start + 2, end).trim()
-            if (inner.isNotEmpty() && !inner.startsWith("end")) {
+            if (inner.isNotEmpty() && !inner.startsWith(END_FOR_START)) {
                 // Ignore {% endfor %}, {% endif %}, etc.
                 results.add(inner)
             }

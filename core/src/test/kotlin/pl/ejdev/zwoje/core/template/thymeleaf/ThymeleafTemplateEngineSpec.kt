@@ -1,27 +1,25 @@
-package pl.ejdev.zwoje.core.mustache
+package pl.ejdev.zwoje.core.template.thymeleaf
 
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.shouldNotBe
 import pl.ejdev.zwoje.core.ZwojeEngine
 import pl.ejdev.zwoje.core.common.InvoiceData
 import pl.ejdev.zwoje.core.common.SampleTemplateInputData
+import pl.ejdev.zwoje.core.common.TEMPLATE_NAME
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
-import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplate
-import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplateResolver
 
-object InvoiceTemplate : ZwojeMustacheTemplate<InvoiceData>("invoice.mustache")
+object InvoiceTemplate : ZwojeThymeleafTemplate<InvoiceData>(TEMPLATE_NAME, null)
 
-private const val TEMPLATE_NAME = "invoice"
-
-class MustacheTemplateEngineSpec : FreeSpec({
+class ThymeleafTemplateEngineSpec : FreeSpec({
     val compileEngine = OpenHtmlToPdfCompileEngine()
-    val resolver = ZwojeMustacheTemplateResolver()
+    val resolver = ZwojeThymeleafTemplateResolver()
     val engine = ZwojeEngine(compileEngine, resolver)
     resolver.register(TEMPLATE_NAME, InvoiceTemplate)
 
-    "should compile mustache based template" - {
+    "should compile thymeleaf based template" - {
         // given
-        val input = SampleTemplateInputData(InvoiceData("Alice", 199.99, listOf()))
+        val data = InvoiceData("Alice", 199.99, listOf("Apples", "Eggs"))
+        val input = SampleTemplateInputData(data)
 
         // when
         val bytes = engine.compile(TEMPLATE_NAME, input)

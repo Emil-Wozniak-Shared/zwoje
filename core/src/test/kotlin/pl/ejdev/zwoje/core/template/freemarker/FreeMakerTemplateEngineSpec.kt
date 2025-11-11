@@ -1,4 +1,4 @@
-package pl.ejdev.zwoje.core.thymeleaf
+package pl.ejdev.zwoje.core.template.freemarker
 
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.shouldNotBe
@@ -7,19 +7,16 @@ import pl.ejdev.zwoje.core.common.InvoiceData
 import pl.ejdev.zwoje.core.common.SampleTemplateInputData
 import pl.ejdev.zwoje.core.common.TEMPLATE_NAME
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
-import pl.ejdev.zwoje.core.template.TemplateInputData
-import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplate
-import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplateResolver
 
-object InvoiceTemplate : ZwojeThymeleafTemplate<InvoiceData>(TEMPLATE_NAME, null)
+object InvoiceTemplate : ZwojeFreeMarkerTemplate<InvoiceData>(TEMPLATE_NAME)
 
-class ThymeleafTemplateEngineSpec : FreeSpec({
+class FreeMakerTemplateEngineSpec : FreeSpec({
     val compileEngine = OpenHtmlToPdfCompileEngine()
-    val resolver = ZwojeThymeleafTemplateResolver()
+    val resolver = ZwojeFreeMarkerTemplateResolver()
     val engine = ZwojeEngine(compileEngine, resolver)
     resolver.register(TEMPLATE_NAME, InvoiceTemplate)
 
-    "should compile thymeleaf based template" - {
+    "should compile FreeMaker based template" - {
         // given
         val data = InvoiceData("Alice", 199.99, listOf("Apples", "Eggs"))
         val input = SampleTemplateInputData(data)

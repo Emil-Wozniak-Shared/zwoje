@@ -1,4 +1,4 @@
-package pl.ejdev.zwoje.core.pebble
+package pl.ejdev.zwoje.core.template.pebble
 
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.shouldNotBe
@@ -7,9 +7,6 @@ import pl.ejdev.zwoje.core.common.InvoiceData
 import pl.ejdev.zwoje.core.common.SampleTemplateInputData
 import pl.ejdev.zwoje.core.common.TEMPLATE_NAME
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
-import pl.ejdev.zwoje.core.template.TemplateInputData
-import pl.ejdev.zwoje.core.template.pebble.ZwojePebbleTemplate
-import pl.ejdev.zwoje.core.template.pebble.ZwojePebbleTemplateResolver
 
 object InvoiceTemplate : ZwojePebbleTemplate<InvoiceData>(TEMPLATE_NAME)
 

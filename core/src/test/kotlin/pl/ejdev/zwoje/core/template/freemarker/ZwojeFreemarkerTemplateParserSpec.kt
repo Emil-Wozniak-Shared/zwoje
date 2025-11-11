@@ -1,4 +1,4 @@
-package pl.ejdev.zwoje.core.template.thymeleaf
+package pl.ejdev.zwoje.core.template.freemarker
 
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.`should be`
@@ -7,24 +7,23 @@ import org.amshove.kluent.shouldNotBeEmpty
 import org.intellij.lang.annotations.Language
 import pl.ejdev.zwoje.core.template.VariableType
 
-class ZwojeThymeleafTemplateParserSpec : FreeSpec({
-
+class ZwojeFreemarkerTemplateParserSpec : FreeSpec({
     "should parse template with simple fields" - {
         @Language("html")
         val content = $$"""
-            <!DOCTYPE html>
-            <html xmlns:th="http://www.w3.org/1999/xhtml">
-            <head>
-                <title>Invoice</title>
-            </head>
-            <body>
-            <h1>Invoice for <span th:text="${name}">Name</span></h1>
-            <p>Amount due: $<span th:text="${amount}">0.00</span></p>
-            </body>
-            </html>
+     <!DOCTYPE html>
+        <html>
+        <head>
+            <title>Invoice</title>
+        </head>
+        <body>
+        <h1>Invoice for <span>${name}</span></h1>
+        <p>Amount due: $<span>${amount}</span></p>
+        </body>
+        </html>
         """.trimIndent()
 
-        val variables = ZwojeThymeleafTemplateParser.parse(content).toList()
+        val variables = ZwojeFreemarkerTemplateParser.parse(content).toList()
 
         variables.shouldNotBeEmpty()
         variables.size `should be equal to` 2
@@ -38,27 +37,28 @@ class ZwojeThymeleafTemplateParserSpec : FreeSpec({
     "should parse template with simple fields and collection fields" - {
         @Language("html")
         val content = $$"""
-            <!DOCTYPE html>
-            <html xmlns:th="http://www.w3.org/1999/xhtml">
+           <!DOCTYPE html>
+            <html>
             <head>
                 <title>Invoice</title>
             </head>
             <body>
-            <h1>Invoice for <span th:text="${name}">Name</span></h1>
-            <p>Amount due: $<span th:text="${amount}">0.00</span></p>
-            <ul th:each="item : ${invoice.items}">
-                <li th:text="${item.name}"></li>
-                <li th:text="${item.description}"></li>
-                <li th:text="${item.quantity}"></li>
-                <li th:text="${item.unitPrice}"></li>
-                <li th:text="${item.total}"></li>
+            <h1>Invoice for <span>${name}</span></h1>
+            <p>Amount due: $<span>${amount}</span></p>
+            <#list invoice.items as item>
+            <ul>
+                <li>${item.name}</li>
+                <li>${item.description}</li>
+                <li>${item.quantity}</li>
+                <li>${item.unitPrice}</li>
+                <li>${item.total}</li>
             </ul>
-
+            </#list>
             </body>
             </html>
         """.trimIndent()
 
-        val variables = ZwojeThymeleafTemplateParser.parse(content).toList()
+        val variables = ZwojeFreemarkerTemplateParser.parse(content).toList()
 
         variables.shouldNotBeEmpty()
         variables.size `should be equal to` 3
