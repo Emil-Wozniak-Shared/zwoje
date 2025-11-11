@@ -1,8 +1,8 @@
 plugins {
-
     id("java")
     id("org.jetbrains.kotlin.jvm") version "2.1.0"
     id("org.jetbrains.intellij.platform") version "2.7.1"
+    id("io.kotest") version "6.0.4"
 }
 
 group = "pl.ejdev"
@@ -27,7 +27,12 @@ dependencies {
         implementation("org.swinglabs:pdf-renderer:1.0.5")
         implementation("org.apache.pdfbox:pdfbox:2.0.30")
         implementation("ca.weblite:swinky-main:0.0.24")
+
     }
+    testImplementation("io.mockk:mockk:1.13.8")
+    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
+    testImplementation("org.amshove.kluent:kluent:1.73")
+    implementation(kotlin("test"))
 }
 
 intellijPlatform {

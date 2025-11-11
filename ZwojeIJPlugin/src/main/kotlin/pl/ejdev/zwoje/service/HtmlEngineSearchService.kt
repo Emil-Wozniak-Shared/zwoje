@@ -9,8 +9,10 @@ import com.intellij.openapi.roots.OrderEnumerator
 import pl.ejdev.zwoje.core.template.TemplateType
 
 @Service(Level.PROJECT)
-class HtmlEngineSearchService(
-    private val project: Project
+class HtmlEngineSearchService @JvmOverloads constructor(
+    private val project: Project,
+    private val moduleManagerProvider: () -> ModuleManager = { ModuleManager.getInstance(project) },
+    private val orderEnumeratorProvider: (Module) -> OrderEnumerator = { OrderEnumerator.orderEntries(it) }
 ) {
     private var moduleTemplates: Map<Module, TemplateType> = mapOf()
 

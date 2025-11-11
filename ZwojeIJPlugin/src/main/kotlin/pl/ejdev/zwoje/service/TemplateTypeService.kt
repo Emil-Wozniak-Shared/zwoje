@@ -1,7 +1,9 @@
 package pl.ejdev.zwoje.service
 
 import com.intellij.openapi.components.Service
+import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.TemplateType
+import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreeMarkerTemplate
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplate
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplate
@@ -12,7 +14,11 @@ import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService.IJTemplateInputData
 @Service(Service.Level.PROJECT)
 class TemplateTypeService {
 
-    fun getTemplate(type: TemplateType, id: String, templatePath: String) = when (type) {
+    fun getTemplate(
+        type: TemplateType,
+        id: String,
+        templatePath: String
+    ): ZwojeTemplate<TemplateInputData<IJTemplateInputData>, IJTemplateInputData> = when (type) {
         TemplateType.Thymeleaf -> IJZwojeThymeleafTemplate(id, templatePath)
         TemplateType.GroovyTemplate -> IJZwojeGroovyMarkupTemplate(id, templatePath)
         TemplateType.Mustache -> IJZwojeMustacheTemplate(id, templatePath)
