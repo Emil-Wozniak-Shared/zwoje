@@ -1,10 +1,9 @@
-package pl.ejdev.zwoje.core.kotlinx
+package pl.ejdev.zwoje.core.template.kotlinx
 
 import io.kotest.core.spec.style.FreeSpec
 import org.amshove.kluent.shouldNotBe
 import pl.ejdev.zwoje.core.ZwojeEngine
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
-import pl.ejdev.zwoje.core.template.kotlinx.ZwojeKotlinHtmlTemplateResolver
 
 private const val TEMPLATE_NAME = "users"
 

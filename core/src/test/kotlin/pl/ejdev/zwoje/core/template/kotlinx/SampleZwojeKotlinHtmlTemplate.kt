@@ -1,4 +1,4 @@
-package pl.ejdev.zwoje.core.kotlinx
+package pl.ejdev.zwoje.core.template.kotlinx
 
 import kotlinx.html.*
 import pl.ejdev.zwoje.core.template.TemplateInputData
