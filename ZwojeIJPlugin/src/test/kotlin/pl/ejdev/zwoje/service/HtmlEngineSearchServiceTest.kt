@@ -10,8 +10,8 @@ import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
-import org.junit.Test
 import pl.ejdev.zwoje.core.template.TemplateType
+import org.junit.Test
 
 class HtmlEngineSearchServiceTest : BasePlatformTestCase() {
 

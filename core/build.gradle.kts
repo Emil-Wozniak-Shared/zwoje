@@ -1,35 +1,36 @@
 plugins {
     `java-library`
     `maven-publish`
-    kotlin("jvm") version "2.2.20"
-    id("io.kotest") version "6.0.4"
+    kotlin("jvm") version "2.2.0"
+    alias(libs.plugins.kotest)
 }
 
 group = "pl.ejdev.zwoje"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
 }
 
 dependencies {
-    implementation("org.jsoup:jsoup:1.21.2")
-    implementation("org.apache.pdfbox:pdfbox:2.0.30")
-    implementation("com.openhtmltopdf:openhtmltopdf-core:1.0.10")
-    implementation("com.openhtmltopdf:openhtmltopdf-pdfbox:1.0.10")
+    implementation(libs.jsoup)
+    implementation(libs.pdfbox)
+    implementation(libs.openhtmltopdf.core)
+    implementation(libs.openhtmltopdf.pdfbox)
 
-    implementation("org.jetbrains.kotlinx:kotlinx-html-jvm:0.11.0")
-    implementation("com.github.spullara.mustache.java:compiler:0.9.10")
-    implementation("org.thymeleaf:thymeleaf:3.1.2.RELEASE")
-    implementation("org.freemarker:freemarker:2.3.33")
-    implementation("org.codehaus.groovy:groovy-templates:3.0.22")
-    implementation("io.pebbletemplates:pebble:3.2.4")
+    implementation(libs.kotlinx.html) { isTransitive = false }
+    implementation(libs.mustache) { isTransitive = false }
+    implementation(libs.thymeleaf) { isTransitive = false }
+    implementation(libs.freemarker) { isTransitive = false }
+    implementation(libs.groovy.templates)
+    implementation(libs.pebble) { isTransitive = false }
 
-    implementation("io.arrow-kt:arrow-core-jvm:2.1.2")
-    runtimeOnly("io.arrow-kt:arrow-core:2.1.2")
+    implementation(libs.arrow.core.jvm)
+    runtimeOnly(libs.arrow.core)
+
     testImplementation(kotlin("test"))
-    testImplementation("io.kotest:kotest-framework-engine-jvm:6.0.4")
-    testImplementation("org.amshove.kluent:kluent:1.73")
+    testImplementation(libs.kotest.engine)
+    testImplementation(libs.kluent)
 }
 
 tasks.test {

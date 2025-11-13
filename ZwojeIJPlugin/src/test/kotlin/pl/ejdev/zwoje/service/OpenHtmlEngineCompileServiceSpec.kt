@@ -4,13 +4,17 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
+import com.jetbrains.rd.util.Result
 import io.mockk.*
 import org.amshove.kluent.shouldBeEqualTo
+import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldBeNull
+import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldNotBeEmpty
 import org.amshove.kluent.shouldNotBeNull
 import org.junit.After
-import org.junit.Assert.*
+import org.junit.Assert.assertArrayEquals
+import org.junit.Assert.assertTrue
 import org.junit.Before
 import org.junit.Test
 import pl.ejdev.zwoje.core.ZwojeEngine
@@ -32,6 +36,7 @@ class OpenHtmlEngineCompileServiceTest {
     private lateinit var mockResolver: ZwojeTemplateResolver<Any>
     private lateinit var mockEngine: ZwojeEngine
     private lateinit var service: OpenHtmlEngineCompileService
+    private lateinit var jsonParseService: JsonParseService
 
     @Before
     fun setUp() {
@@ -44,12 +49,14 @@ class OpenHtmlEngineCompileServiceTest {
         mockFile = mockk()
         mockResolver = mockk(relaxed = true)
         mockEngine = mockk(relaxed = true)
+        jsonParseService = JsonParseService()
 
         every { mockFile.name } returns "test.html"
         every { mockFile.path } returns "/tmp/test.html"
 
         every { mockProject.service<TemplateResolverService>() } returns mockResolverService
         every { mockProject.service<ZwojeSampleService>() } returns mockSampleService
+        every { mockProject.service<JsonParseService>() } returns jsonParseService
 
         service = OpenHtmlEngineCompileService(mockProject)
     }
@@ -112,15 +119,7 @@ class OpenHtmlEngineCompileServiceTest {
 
         // Second compile — should reuse the same engine, not create new
         val result2 = service.compile(mockResolver, mockFile, "html")
-        result2 shouldBeEqualTo true
-    }
-
-    @Test
-    fun `inputData with empty samples returns empty TemplateInputData`() {
-        val method = service.javaClass.getDeclaredMethod("inputData", String::class.java)
-        method.isAccessible = true
-        val data = method.invoke(service, EMPTY_SAMPLES)
-        data.shouldBeNull()
+        result2.isSuccess.shouldBeTrue()
     }
 
     @Test
