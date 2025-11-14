@@ -1,6 +1,5 @@
 package pl.ejdev.zwoje.service
 
-import com.google.gson.Gson
 import com.intellij.openapi.components.Service
 import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project

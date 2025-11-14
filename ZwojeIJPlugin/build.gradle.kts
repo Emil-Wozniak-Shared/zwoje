@@ -1,12 +1,12 @@
 plugins {
     id("java")
-    id("org.jetbrains.kotlin.jvm") version "2.1.0"
+    kotlin("jvm") version "2.2.0"
     id("org.jetbrains.intellij.platform") version "2.7.1"
-    id("io.kotest") version "6.0.4"
+    alias(libs.plugins.kotest)
 }
 
 group = "pl.ejdev"
-version = "1.0-SNAPSHOT"
+version = "1.0.0-SNAPSHOT"
 
 repositories {
     mavenCentral()
@@ -20,19 +20,27 @@ dependencies {
     intellijPlatform {
         create("IC", "2025.1.4.1")
         testFramework(org.jetbrains.intellij.platform.gradle.TestFrameworkType.Platform)
-//         bundledPlugin("com.intellij.java")
         bundledPlugins("com.intellij.modules.json")
-        implementation("com.google.code.gson:gson:2.10.1")
-        implementation("pl.ejdev.zwoje:core:1.0-SNAPSHOT")
-        implementation("org.swinglabs:pdf-renderer:1.0.5")
-        implementation("org.apache.pdfbox:pdfbox:2.0.30")
-        implementation("ca.weblite:swinky-main:0.0.24")
-
     }
-    testImplementation("io.mockk:mockk:1.13.8")
-    testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.7.3")
-    testImplementation("org.amshove.kluent:kluent:1.73")
-    implementation(kotlin("test"))
+
+    implementation(libs.gson)
+    implementation("pl.ejdev.zwoje:core:1.0.0-SNAPSHOT")
+    implementation(libs.pdf.renderer)
+    implementation(libs.pdfbox)
+    implementation(libs.swinky)
+
+    // core requirements
+    implementation(libs.kotlinx.html)
+    implementation(libs.mustache)
+    implementation(libs.thymeleaf)
+    implementation(libs.freemarker)
+    implementation(libs.groovy.templates)
+    implementation(libs.pebble)
+
+    testImplementation(libs.mockk)
+    testImplementation(libs.coroutines.test)
+    testImplementation(libs.kluent)
+    testImplementation(kotlin("test"))
 }
 
 intellijPlatform {
@@ -54,13 +62,8 @@ tasks {
     }
 }
 
-tasks.named("runIde") {
-//    dependsOn(":core:publishToMavenLocal")
-}
-
 kotlin {
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
 }
-
