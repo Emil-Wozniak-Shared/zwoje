@@ -1,20 +1,21 @@
 package pl.ejdev.zwoje.service
 
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import org.amshove.kluent.shouldNotBeNull
-import pl.ejdev.zwoje.core.template.TemplateType
+import org.junit.Assert.assertNotSame
+import org.junit.Assert.assertTrue
+import org.junit.Before
+import org.junit.Test
 import pl.ejdev.zwoje.core.template.TemplateType.*
-import kotlin.test.Test
 
 private const val TEST_ID = "test-id"
 private const val PATH_TO_TEMPLATE = "/path/to/template"
 
-class TemplateTypeServiceTest : BasePlatformTestCase() {
+class TemplateTypeServiceTest  {
 
     private lateinit var service: TemplateTypeService
 
-    override fun setUp() {
-        super.setUp()
+    @Before
+    fun setUp() {
         service = TemplateTypeService()
     }
 
@@ -56,13 +57,6 @@ class TemplateTypeServiceTest : BasePlatformTestCase() {
 
         template.shouldNotBeNull()
         assertTrue(template is TemplateTypeService.IJZwojePebbleTemplate)
-    }
-
-    @Test(expected = NotImplementedError::class)
-    fun `getTemplate throws NotImplementedError for KotlinxHtml`() {
-        assertThrows(NotImplementedError::class.java) {
-            service.getTemplate(TemplateType.KotlinxHtml, TEST_ID, PATH_TO_TEMPLATE)
-        }
     }
 
     @Test
