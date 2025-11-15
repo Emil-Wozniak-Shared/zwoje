@@ -74,7 +74,7 @@ class ZwojeSampleService(
             relativeFilePath = "/${resource.name}$relativeFilePath"
             resource = resource.parent
         }
-        createConfigFile(resource, parent, virtualFile.name, "/resources$relativeFilePath")
+        createConfigFile(resource, parent, virtualFile.name, relativeFilePath)
         return parent
     }
 
@@ -96,32 +96,33 @@ class ZwojeSampleService(
         val data = zwojeFile.readText()
         val zwojeConfigFile = jsonParseService.parse<ZwojeConfigFile>(data)
         if (!zwojeConfigFile.config.templates.contains(id)) {
-            zwojeConfigFile.config.templates[id] = filePath
+            zwojeConfigFile.config.templates[id] = TemplateReference(
+                filePath,
+                getDataPath(filePath, id),
+            )
         }
         val text = jsonParseService.toJson(zwojeConfigFile)
         return zwojeFile to text
     }
 
     private fun createNewZwojeFile(
-        dir: VirtualFile,
-        parent: VirtualFile,
-        id: String,
-        filePath: String
+        dir: VirtualFile, parent: VirtualFile, id: String, filePath: String
     ): Pair<VirtualFile, String> {
-        val zwojeFile = dir.createChildData(this, CONFIG_FILENAME)
-        val root = mapOf(
-            "config" to mapOf(
-                "root" to parent.name,
-                "templates" to mapOf(
-                    id to filePath
-                )
+        val configFile = ZwojeConfigFile(
+            config = ZwojeConfig(
+                root = parent.name,
+                templates = mutableMapOf(id to TemplateReference(filePath, getDataPath(filePath, id)))
             )
         )
-        val json = jsonParseService.toJson(root)
+        val zwojeFile = dir.createChildData(this, CONFIG_FILENAME)
+        val json = jsonParseService.toJson(configFile)
 
         VfsUtil.saveText(zwojeFile, json)
         return zwojeFile to json
     }
+
+    private fun getDataPath(filePath: String, id: String): String =
+        filePath.replace(id, "data/" + id.replaceAfter(".", "json"))
 
     private fun createContent(resolver: ZwojeTemplateResolver<Any>): String {
         val parser = templateParserService.getParser(resolver.type)
@@ -132,6 +133,7 @@ class ZwojeSampleService(
         return jsonParseService.toJson(body)
     }
 
+    @Suppress("UNCHECKED_CAST")
     private fun createJsonFromVariables(templateVariables: Set<TemplateVariable>): Map<String, List<MutableMap<String, Any>>> {
         val sample = mutableMapOf<String, Any>()
 
@@ -191,7 +193,12 @@ class ZwojeSampleService(
 
     data class ZwojeConfig(
         val root: String,
-        val templates: MutableMap<String, String>
+        val templates: MutableMap<String, TemplateReference>
+    )
+
+    data class TemplateReference(
+        val path: String,
+        val data: String
     )
 
     sealed interface GetSampleResult {

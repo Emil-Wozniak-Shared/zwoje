@@ -5,22 +5,26 @@ import com.intellij.openapi.module.ModuleManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.roots.OrderEnumerator
 import com.intellij.openapi.roots.OrderRootsEnumerator
-import com.intellij.testFramework.fixtures.BasePlatformTestCase
 import io.mockk.every
 import io.mockk.mockk
 import io.mockk.mockkStatic
 import io.mockk.unmockkAll
+import org.amshove.kluent.internal.assertEquals
+import org.junit.After
+import org.junit.Assert.assertTrue
+import org.junit.Before
 import pl.ejdev.zwoje.core.template.TemplateType
 import org.junit.Test
 
-class HtmlEngineSearchServiceTest : BasePlatformTestCase() {
+class HtmlEngineSearchServiceTest {
 
     private lateinit var mockProject: Project
     private lateinit var mockModuleManager: ModuleManager
     private lateinit var mockModule1: Module
     private lateinit var mockModule2: Module
 
-    override fun setUp() {
+    @Before
+    fun setUp() {
         mockProject = mockk(relaxed = true)
         mockModuleManager = mockk()
         mockModule1 = mockk(relaxed = true)
@@ -31,7 +35,8 @@ class HtmlEngineSearchServiceTest : BasePlatformTestCase() {
         mockkStatic(OrderEnumerator::class)
     }
 
-    override fun tearDown() {
+    @After
+    fun tearDown() {
         try {
             unmockkAll()
         } catch (_: Exception) {

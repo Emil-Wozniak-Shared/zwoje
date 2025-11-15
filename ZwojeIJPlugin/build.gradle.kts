@@ -2,7 +2,6 @@ plugins {
     id("java")
     kotlin("jvm") version "2.2.0"
     id("org.jetbrains.intellij.platform") version "2.7.1"
-    alias(libs.plugins.kotest)
 }
 
 group = "pl.ejdev"
@@ -23,8 +22,8 @@ dependencies {
         bundledPlugins("com.intellij.modules.json")
     }
 
-    implementation(libs.gson)
     implementation("pl.ejdev.zwoje:core:1.0.0-SNAPSHOT")
+    implementation(libs.gson)
     implementation(libs.pdf.renderer)
     implementation(libs.pdfbox)
     implementation(libs.swinky)
@@ -36,11 +35,12 @@ dependencies {
     implementation(libs.freemarker)
     implementation(libs.groovy.templates)
     implementation(libs.pebble)
+    implementation(libs.coroutines.core)
 
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
     testImplementation(libs.kluent)
-    testImplementation(kotlin("test"))
+    testImplementation("junit:junit:4.13.2")
 }
 
 intellijPlatform {
@@ -59,6 +59,9 @@ tasks {
     withType<JavaCompile> {
         sourceCompatibility = "21"
         targetCompatibility = "21"
+    }
+    test {
+        useJUnit() // JUnit 4 runner
     }
 }
 

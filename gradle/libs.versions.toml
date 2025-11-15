@@ -36,6 +36,7 @@ groovy-templates = { module = "org.codehaus.groovy:groovy-templates", version.re
 pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }
 arrow-core-jvm = { module = "io.arrow-kt:arrow-core-jvm", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
+coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-test" }
 
 # --- ZwojeIJPlugin ---
 gson = { module = "com.google.code.gson:gson", version.ref = "gson" }

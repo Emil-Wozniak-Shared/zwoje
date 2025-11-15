@@ -18,12 +18,12 @@ dependencies {
     implementation(libs.openhtmltopdf.core)
     implementation(libs.openhtmltopdf.pdfbox)
 
-    implementation(libs.kotlinx.html) { isTransitive = false }
-    implementation(libs.mustache) { isTransitive = false }
-    implementation(libs.thymeleaf) { isTransitive = false }
-    implementation(libs.freemarker) { isTransitive = false }
-    implementation(libs.groovy.templates)
-    implementation(libs.pebble) { isTransitive = false }
+    api(libs.kotlinx.html)
+    api(libs.mustache)
+    api(libs.thymeleaf)
+    api(libs.freemarker)
+    api(libs.groovy.templates)
+    api(libs.pebble)
 
     implementation(libs.arrow.core.jvm)
     runtimeOnly(libs.arrow.core)
