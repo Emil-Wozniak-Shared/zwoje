@@ -17,9 +17,4 @@ class JsonParseService {
         val json = gson.toJson(data)
         return json
     }
-
-    internal fun toJson(data: Map<String, Any>): String {
-        val gson = GsonBuilder().setPrettyPrinting().create()
-        return gson.toJson(data)
-    }
 }
