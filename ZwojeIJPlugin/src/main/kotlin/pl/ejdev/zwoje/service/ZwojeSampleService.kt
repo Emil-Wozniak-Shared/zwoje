@@ -7,14 +7,11 @@ import com.intellij.openapi.fileEditor.FileEditorManager
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.vfs.VfsUtil
 import com.intellij.openapi.vfs.VirtualFile
-import com.intellij.openapi.vfs.readText
+import pl.ejdev.zwoje.DATA_DIRECTORY_NAME
 import pl.ejdev.zwoje.core.template.TemplateVariable
 import pl.ejdev.zwoje.core.template.VariableType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 import pl.ejdev.zwoje.utils.nameWithExtension
-
-private const val DATA_DIRECTORY_NAME = "data"
-private const val CONFIG_FILENAME = "zwoje.json"
 
 @Service(Service.Level.PROJECT)
 class ZwojeSampleService(
@@ -23,13 +20,14 @@ class ZwojeSampleService(
     private val templateParserService = project.service<TemplateParserService>()
     private val templateResolverService = project.service<TemplateResolverService>()
     private val jsonParseService = project.service<JsonParseService>()
+    private val zwojeConfigFileService = project.service<ZwojeConfigFileService>()
 
     fun getSamples(virtualFile: VirtualFile): GetSampleResult {
         return try {
             val dir = VfsUtil.createDirectoryIfMissing(virtualFile.parent, DATA_DIRECTORY_NAME)
                 ?: return GetSampleResult.Error("Unable to create or access data directory")
 
-            val fileName = "${virtualFile.nameWithoutExtension}.json"
+            val fileName =  virtualFile.nameWithExtension("json")
             val file = dir.findChild(fileName) ?: return GetSampleResult.FileNotExists
 
             val content = VfsUtil.loadText(file)
@@ -74,132 +72,78 @@ class ZwojeSampleService(
             relativeFilePath = "/${resource.name}$relativeFilePath"
             resource = resource.parent
         }
-        createConfigFile(resource, parent, virtualFile.name, relativeFilePath)
+        zwojeConfigFileService.createConfigFile(resource, parent, virtualFile.name, relativeFilePath)
         return parent
     }
-
-
-    private fun createConfigFile(dir: VirtualFile, parent: VirtualFile, id: String, filePath: String) {
-        val zwojeFile = dir.findChild(CONFIG_FILENAME)
-        val (file, text) =
-            if (zwojeFile == null) createNewZwojeFile(dir, parent, id, filePath)
-            else addTemplateToZwojeFile(zwojeFile, id, filePath)
-
-        VfsUtil.saveText(file, text)
-    }
-
-    private fun addTemplateToZwojeFile(
-        zwojeFile: VirtualFile,
-        id: String,
-        filePath: String
-    ): Pair<VirtualFile, String> {
-        val data = zwojeFile.readText()
-        val zwojeConfigFile = jsonParseService.parse<ZwojeConfigFile>(data)
-        if (!zwojeConfigFile.config.templates.contains(id)) {
-            zwojeConfigFile.config.templates[id] = TemplateReference(
-                filePath,
-                getDataPath(filePath, id),
-            )
-        }
-        val text = jsonParseService.toJson(zwojeConfigFile)
-        return zwojeFile to text
-    }
-
-    private fun createNewZwojeFile(
-        dir: VirtualFile, parent: VirtualFile, id: String, filePath: String
-    ): Pair<VirtualFile, String> {
-        val configFile = ZwojeConfigFile(
-            config = ZwojeConfig(
-                root = parent.name,
-                templates = mutableMapOf(id to TemplateReference(filePath, getDataPath(filePath, id)))
-            )
-        )
-        val zwojeFile = dir.createChildData(this, CONFIG_FILENAME)
-        val json = jsonParseService.toJson(configFile)
-
-        VfsUtil.saveText(zwojeFile, json)
-        return zwojeFile to json
-    }
-
-    private fun getDataPath(filePath: String, id: String): String =
-        filePath.replace(id, "data/" + id.replaceAfter(".", "json"))
 
     private fun createContent(resolver: ZwojeTemplateResolver<Any>): String {
         val parser = templateParserService.getParser(resolver.type)
         val editor = FileEditorManager.getInstance(project).selectedTextEditor!!
         FileDocumentManager.getInstance().saveDocument(editor.document)
         val templateVariables = parser.parse(editor.document.text)
-        val body = createJsonFromVariables(templateVariables)
+        val body = ZwojeSampleFile.from(templateVariables)
         return jsonParseService.toJson(body)
     }
 
     @Suppress("UNCHECKED_CAST")
-    private fun createJsonFromVariables(templateVariables: Set<TemplateVariable>): Map<String, List<MutableMap<String, Any>>> {
-        val sample = mutableMapOf<String, Any>()
+    data class ZwojeSampleFile(
+        val samples: List<Map<String, Any>>
+    ) {
+        companion object {
+            fun from(templateVariables: Set<TemplateVariable>): ZwojeSampleFile {
+                val sample = mutableMapOf<String, Any>()
 
-        templateVariables.forEach { variable ->
-            when {
-                variable.type == VariableType.COLLECTION && variable.children.isNotEmpty() -> {
-                    // Handle collection with known item properties
-                    val parts = variable.name.split(".")
-                    var current: MutableMap<String, Any> = sample
+                templateVariables.forEach { variable ->
+                    when {
+                        variable.type == VariableType.COLLECTION && variable.children.isNotEmpty() -> {
+                            // Handle collection with known item properties
+                            val parts = variable.name.split(".")
+                            var current: MutableMap<String, Any> = sample
 
-                    // Navigate to the collection's parent
-                    parts.dropLast(1).forEach { part ->
-                        val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
-                        current = next as MutableMap<String, Any>
-                    }
+                            // Navigate to the collection's parent
+                            parts.dropLast(1).forEach { part ->
+                                val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
+                                current = next as MutableMap<String, Any>
+                            }
 
-                    val collectionKey = parts.last()
-                    val itemSample = mutableMapOf<String, Any>()
-                    variable.children.forEach { child ->
-                        val childParts = child.name.split(".")
-                        var itemCurrent: MutableMap<String, Any> = itemSample
+                            val collectionKey = parts.last()
+                            val itemSample = mutableMapOf<String, Any>()
+                            variable.children.forEach { child ->
+                                val childParts = child.name.split(".")
+                                var itemCurrent: MutableMap<String, Any> = itemSample
 
-                        childParts.forEachIndexed { index, part ->
-                            if (index == childParts.lastIndex) {
-                                itemCurrent[part] = ""
-                            } else {
-                                val next = itemCurrent.getOrPut(part) { mutableMapOf<String, Any>() }
-                                itemCurrent = next as MutableMap<String, Any>
+                                childParts.forEachIndexed { index, part ->
+                                    if (index == childParts.lastIndex) {
+                                        itemCurrent[part] = ""
+                                    } else {
+                                        val next = itemCurrent.getOrPut(part) { mutableMapOf<String, Any>() }
+                                        itemCurrent = next as MutableMap<String, Any>
+                                    }
+                                }
+                            }
+
+                            current[collectionKey] = listOf(itemSample)
+                        }
+
+                        variable.type != VariableType.COLLECTION -> {
+                            val parts = variable.name.split(".")
+                            var current: MutableMap<String, Any> = sample
+
+                            parts.forEachIndexed { index, part ->
+                                if (index == parts.lastIndex) {
+                                    current[part] = ""
+                                } else {
+                                    val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
+                                    current = next as MutableMap<String, Any>
+                                }
                             }
                         }
                     }
-
-                    current[collectionKey] = listOf(itemSample)
                 }
-
-                variable.type != VariableType.COLLECTION -> {
-                    val parts = variable.name.split(".")
-                    var current: MutableMap<String, Any> = sample
-
-                    parts.forEachIndexed { index, part ->
-                        if (index == parts.lastIndex) {
-                            current[part] = ""
-                        } else {
-                            val next = current.getOrPut(part) { mutableMapOf<String, Any>() }
-                            current = next as MutableMap<String, Any>
-                        }
-                    }
-                }
+                return ZwojeSampleFile(listOf(sample))
             }
         }
-        return mapOf("samples" to listOf(sample))
     }
-
-    data class ZwojeConfigFile(
-        val config: ZwojeConfig
-    )
-
-    data class ZwojeConfig(
-        val root: String,
-        val templates: MutableMap<String, TemplateReference>
-    )
-
-    data class TemplateReference(
-        val path: String,
-        val data: String
-    )
 
     sealed interface GetSampleResult {
         class OK(val content: String) : GetSampleResult
