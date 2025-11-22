@@ -4,6 +4,7 @@ import com.intellij.openapi.components.Service
 import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
+import pl.ejdev.zwoje.core.template.apacheVM.ZwojeApacheVMTemplate
 import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreeMarkerTemplate
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplate
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplate
@@ -20,6 +21,7 @@ class TemplateTypeService {
         templatePath: String
     ): ZwojeTemplate<TemplateInputData<IJTemplateInputData>, IJTemplateInputData> = when (type) {
         TemplateType.Thymeleaf -> IJZwojeThymeleafTemplate(id, templatePath)
+        TemplateType.ApacheVM -> IJZwojeApacheVelocityTemplate(id, templatePath)
         TemplateType.GroovyTemplate -> IJZwojeGroovyMarkupTemplate(id, templatePath)
         TemplateType.Mustache -> IJZwojeMustacheTemplate(id, templatePath)
         TemplateType.FreeMarker -> IJZwojeFreeMarkerTemplate(id, templatePath)
@@ -29,6 +31,9 @@ class TemplateTypeService {
 
     class IJZwojeThymeleafTemplate(name: String, templatePath: String) :
         ZwojeThymeleafTemplate<IJTemplateInputData>(name, templatePath)
+
+    class IJZwojeApacheVelocityTemplate(name: String, templatePath: String) :
+        ZwojeApacheVMTemplate<IJTemplateInputData>(name) //TODO templatePath do I need this
 
     class IJZwojeGroovyMarkupTemplate(name: String, templatePath: String) :
         ZwojeGroovyMarkupTemplate<IJTemplateInputData>(templatePath)

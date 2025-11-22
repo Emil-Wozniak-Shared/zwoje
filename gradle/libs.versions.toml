@@ -10,6 +10,7 @@ freemarker = "2.3.33"
 groovy = "3.0.22"
 pebble = "3.2.4"
 arrow = "2.1.2"
+apachevm = "2.3"
 
 # ZwojeIJPlugin libraries
 gson = "2.10.1"
@@ -31,6 +32,7 @@ openhtmltopdf-pdfbox = { module = "com.openhtmltopdf:openhtmltopdf-pdfbox", vers
 kotlinx-html = { module = "org.jetbrains.kotlinx:kotlinx-html-jvm", version.ref = "kotlinx-html" }
 mustache = { module = "com.github.spullara.mustache.java:compiler", version.ref = "mustache" }
 thymeleaf = { module = "org.thymeleaf:thymeleaf", version.ref = "thymeleaf" }
+apachevelocity = { module = "org.apache.velocity:velocity-engine-core", version.ref = "apachevm" }
 freemarker = { module = "org.freemarker:freemarker", version.ref = "freemarker" }
 groovy-templates = { module = "org.codehaus.groovy:groovy-templates", version.ref = "groovy" }
 pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }

@@ -4,6 +4,7 @@ import com.intellij.openapi.components.Service
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.TemplateVariable
 import pl.ejdev.zwoje.core.template.ZwojeTemplateParser
+import pl.ejdev.zwoje.core.template.apacheVM.ZwojeApacheVMTemplateParser
 import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreemarkerTemplateParser
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateParser
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplateParser
@@ -16,6 +17,7 @@ class TemplateParserService {
     fun getParser(type: TemplateType): ZwojeTemplateParser =
         when (type) {
             TemplateType.Thymeleaf -> ZwojeThymeleafTemplateParser
+            TemplateType.ApacheVM -> ZwojeApacheVMTemplateParser
             TemplateType.Mustache -> ZwojeMustacheTemplateParser
             TemplateType.FreeMarker -> ZwojeFreemarkerTemplateParser
             TemplateType.Pebble -> ZwojePebbleTemplateParser

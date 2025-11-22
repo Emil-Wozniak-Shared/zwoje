@@ -9,6 +9,7 @@ import com.intellij.openapi.vfs.VirtualFile
 import pl.ejdev.zwoje.core.template.TemplateProvider
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
+import pl.ejdev.zwoje.core.template.apacheVM.ZwojeApacheVMTemplateResolver
 import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreeMarkerTemplateResolver
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplateResolver
 import pl.ejdev.zwoje.core.template.kotlinx.ZwojeKotlinHtmlTemplateResolver
@@ -55,6 +56,7 @@ class TemplateResolverService(
         TemplateType.FreeMarker -> zwojeFreeMakerTemplateResolver
         TemplateType.KotlinxHtml -> zwojeKotlinHtmlTemplateResolver
         TemplateType.Pebble -> zwojePebbleTemplateResolver
+        TemplateType.ApacheVM -> zwojeApacheVMTemplateResolver
     }
 
     private companion object {
@@ -64,6 +66,7 @@ class TemplateResolverService(
         private val zwojeFreeMakerTemplateResolver by lazy { ZwojeFreeMarkerTemplateResolver() }
         private val zwojeKotlinHtmlTemplateResolver by lazy { ZwojeKotlinHtmlTemplateResolver() }
         private val zwojePebbleTemplateResolver by lazy { ZwojePebbleTemplateResolver() }
+        private val zwojeApacheVMTemplateResolver by lazy { ZwojeApacheVMTemplateResolver() }
     }
 }
 

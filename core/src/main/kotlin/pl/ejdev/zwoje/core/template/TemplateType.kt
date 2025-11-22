@@ -9,5 +9,6 @@ enum class TemplateType(
     Mustache("mustache", "mustache"),
     Pebble("pebble", "peb"),
     KotlinxHtml("kotlinx-html-jvm", "kt"),
-    Thymeleaf("thymeleaf",  "html")
+    Thymeleaf("thymeleaf",  "html"),
+    ApacheVM("apache-vm", "vm")
 }

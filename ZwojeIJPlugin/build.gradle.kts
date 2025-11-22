@@ -32,6 +32,7 @@ dependencies {
     implementation(libs.kotlinx.html)
     implementation(libs.mustache)
     implementation(libs.thymeleaf)
+    implementation(libs.apachevelocity)
     implementation(libs.freemarker)
     implementation(libs.groovy.templates)
     implementation(libs.pebble)
@@ -66,6 +67,12 @@ tasks {
 }
 
 kotlin {
+//    todo
+        sourceSets.all {
+        languageSettings {
+            enableLanguageFeature("MultiDollarInterpolation")
+        }
+    }
     compilerOptions {
         jvmTarget.set(org.jetbrains.kotlin.gradle.dsl.JvmTarget.JVM_21)
     }
