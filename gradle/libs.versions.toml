@@ -9,6 +9,7 @@ thymeleaf = "3.1.2.RELEASE"
 freemarker = "2.3.33"
 groovy = "3.0.22"
 pebble = "3.2.4"
+jasper = "6.16.0"
 arrow = "2.1.2"
 
 # ZwojeIJPlugin libraries
@@ -34,6 +35,7 @@ thymeleaf = { module = "org.thymeleaf:thymeleaf", version.ref = "thymeleaf" }
 freemarker = { module = "org.freemarker:freemarker", version.ref = "freemarker" }
 groovy-templates = { module = "org.codehaus.groovy:groovy-templates", version.ref = "groovy" }
 pebble = { module = "io.pebbletemplates:pebble", version.ref = "pebble" }
+jasper = { module = "net.sf.jasperreports:jasperreports", version.ref = "jasper" }
 arrow-core-jvm = { module = "io.arrow-kt:arrow-core-jvm", version.ref = "arrow" }
 arrow-core = { module = "io.arrow-kt:arrow-core", version.ref = "arrow" }
 coroutines-core = { module = "org.jetbrains.kotlinx:kotlinx-coroutines-core", version.ref = "coroutines-test" }

@@ -3,8 +3,8 @@ package pl.ejdev.zwoje.core.template.pebble
 import io.pebbletemplates.pebble.PebbleEngine
 import io.pebbletemplates.pebble.loader.ClasspathLoader
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateOutput
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
-import pl.ejdev.zwoje.core.utils.dataClassMembersFilter
 import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.StringWriter
 
@@ -12,11 +12,11 @@ abstract class ZwojePebbleTemplate<INPUT : Any>(
     override val templatePath: String
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
-    override fun compile(input: TemplateInputData<INPUT>): String {
+    override fun compile(input: TemplateInputData<INPUT>): TemplateOutput {
         val template = engine.getTemplate(templatePath)
         val writer = StringWriter()
         template.evaluate(writer, input.getMembers().toMap())
-        return writer.toString()
+        return writer.toString().let { TemplateOutput.Html(it) }
     }
 
     private companion object {

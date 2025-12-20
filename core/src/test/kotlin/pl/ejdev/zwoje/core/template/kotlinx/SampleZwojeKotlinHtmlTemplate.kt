@@ -2,14 +2,14 @@ package pl.ejdev.zwoje.core.template.kotlinx
 
 import kotlinx.html.*
 import pl.ejdev.zwoje.core.template.TemplateInputData
-import pl.ejdev.zwoje.core.template.kotlinx.ZwojeKotlinHtmlTemplate
+import pl.ejdev.zwoje.core.template.TemplateOutput
 
 class SampleTemplateInputData(
     input: List<String>
 ): TemplateInputData<List<String>>(input)
 
 object SampleZwojeKotlinHtmlTemplate : ZwojeKotlinHtmlTemplate<List<String>>() {
-    override fun compile(input: TemplateInputData<List<String>>) = html("Users") {
+    override fun compile(input: TemplateInputData<List<String>>): TemplateOutput = html("Users") {
         val users = input.data
         body {
             div {
@@ -26,6 +26,7 @@ object SampleZwojeKotlinHtmlTemplate : ZwojeKotlinHtmlTemplate<List<String>>() {
             }
         }
     }
+        .let { TemplateOutput.Html(it) }
 
     private fun TBODY.usersRows(users: List<String>) {
         users.forEachIndexed { id, user ->

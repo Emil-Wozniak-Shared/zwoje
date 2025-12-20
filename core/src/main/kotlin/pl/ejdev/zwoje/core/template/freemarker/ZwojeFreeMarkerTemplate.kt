@@ -3,6 +3,7 @@ package pl.ejdev.zwoje.core.template.freemarker
 import freemarker.template.Configuration
 import freemarker.template.TemplateExceptionHandler
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateOutput
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import java.io.File
 import java.io.StringWriter
@@ -11,13 +12,13 @@ abstract class ZwojeFreeMarkerTemplate<INPUT : Any>(
     override val templatePath: String? = null
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
-    override fun compile(input: TemplateInputData<INPUT>): String {
+    override fun compile(input: TemplateInputData<INPUT>): TemplateOutput {
         val effectivePath = templatePath ?: "$templateName.ftl"
         val config = getConfigurationForPath(effectivePath)
         val template = config.getTemplate(getTemplateName(effectivePath))
         val writer = StringWriter()
         template.process(input.data, writer)
-        return writer.toString()
+        return writer.toString().let { TemplateOutput.Html(it) }
     }
 
     private fun getConfigurationForPath(path: String): Configuration {

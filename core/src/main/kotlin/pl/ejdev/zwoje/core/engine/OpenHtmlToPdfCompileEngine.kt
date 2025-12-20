@@ -4,8 +4,8 @@ import com.openhtmltopdf.pdfboxout.PdfRendererBuilder
 import java.io.ByteArrayOutputStream
 import java.io.File
 
-class OpenHtmlToPdfCompileEngine : PdfCompileEngine() {
-    override fun compile(compileData: CompileData): ByteArray = ByteArrayOutputStream().use { stream ->
+class OpenHtmlToPdfCompileEngine : PdfCompileEngine<HtmlOutput>() {
+    override fun compile(compileData: HtmlOutput): ByteArray = ByteArrayOutputStream().use { stream ->
         val baseDir = compileData.templatePath?.let {  File(it).toURI().toString() }
         PdfRendererBuilder().run {
             useFastMode()

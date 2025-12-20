@@ -3,6 +3,7 @@ package pl.ejdev.zwoje.core.template.mustache
 import com.github.mustachejava.DefaultMustacheFactory
 import com.github.mustachejava.Mustache
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateOutput
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import java.io.File
 import java.io.StringWriter
@@ -11,14 +12,14 @@ abstract class ZwojeMustacheTemplate<INPUT : Any>(
     override val templatePath: String? = null
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
 
-    override fun compile(input: TemplateInputData<INPUT>): String {
+    override fun compile(input: TemplateInputData<INPUT>): TemplateOutput {
         val mustache =
             if (isFullPath(templatePath!!)) compileFromFileSystem(templatePath!!)
             else compileFromClasspath(templatePath!!)
 
         val writer = StringWriter()
         mustache.execute(writer, input).flush()
-        return writer.toString()
+        return writer.toString().let { TemplateOutput.Html(it) }
     }
 
     private fun isFullPath(path: String): Boolean = path.startsWith("/") ||

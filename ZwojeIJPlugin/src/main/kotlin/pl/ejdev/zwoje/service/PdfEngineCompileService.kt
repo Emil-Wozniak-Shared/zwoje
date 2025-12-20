@@ -7,7 +7,10 @@ import com.intellij.openapi.ui.Messages.showErrorDialog
 import com.intellij.openapi.ui.Messages.showWarningDialog
 import com.intellij.openapi.vfs.VirtualFile
 import pl.ejdev.zwoje.core.ZwojeEngine
+import pl.ejdev.zwoje.core.engine.CompileData
+import pl.ejdev.zwoje.core.engine.JasperCompileEngine
 import pl.ejdev.zwoje.core.engine.OpenHtmlToPdfCompileEngine
+import pl.ejdev.zwoje.core.engine.PdfCompileEngine
 import pl.ejdev.zwoje.core.template.TemplateInputData
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
@@ -17,12 +20,11 @@ import kotlin.Result.Companion.failure
 private const val TITLE = "OpenHtmlEngineCompileService"
 
 @Service(Service.Level.PROJECT)
-class OpenHtmlEngineCompileService(
+class PdfEngineCompileService(
     private val project: Project
 ) {
     private val templateResolverService = project.service<TemplateResolverService>()
     private val zwojeSampleService = project.service<ZwojeSampleService>()
-    private val compileEngine = OpenHtmlToPdfCompileEngine()
     private val jsonParseService = project.service<JsonParseService>()
 
     private val engines: MutableMap<TemplateType, ZwojeEngine> = mutableMapOf()
@@ -51,13 +53,19 @@ class OpenHtmlEngineCompileService(
     }
 
     private fun findEngine(resolver: ZwojeTemplateResolver<Any>): ZwojeEngine {
-        var engine = engines[resolver.type]
+        val type: TemplateType = resolver.type
+        var engine = engines[type]
         if (engine == null) {
-            engine = ZwojeEngine(compileEngine, resolver)
-            engines[resolver.type] = engine
+            engine = ZwojeEngine(resolveCompileEngine(type), resolver)
+            engines[type] = engine
         }
         return engine
     }
+
+    private fun resolveCompileEngine(type: TemplateType): PdfCompileEngine<CompileData> = when (type) {
+            TemplateType.Jasper -> jasperCompileEngine
+            else -> openHtmlCompileEngine
+        }
 
     private fun parseJsonFileToObject(content: String): List<Any>? =
         jsonParseService.parse<Data>(content).samples.takeIf { it.isNotEmpty() }
@@ -67,4 +75,9 @@ class OpenHtmlEngineCompileService(
     class Data(
         val samples: List<Any>
     )
+
+    private companion object {
+        private val openHtmlCompileEngine by lazy {  OpenHtmlToPdfCompileEngine() }
+        private val jasperCompileEngine by lazy { JasperCompileEngine()}
+    }
 }

@@ -16,7 +16,8 @@ class HtmlEngineSearchService @JvmOverloads constructor(
 ) {
     private var moduleTemplates: Map<Module, TemplateType> = mapOf()
 
-    fun getModuleTemplates() = moduleTemplates
+    fun getModuleTemplates() =
+        moduleTemplates
 
     init {
         moduleTemplates = modulesAndDependencies()

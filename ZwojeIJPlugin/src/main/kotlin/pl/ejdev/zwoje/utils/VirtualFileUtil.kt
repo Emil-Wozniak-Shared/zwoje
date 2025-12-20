@@ -13,12 +13,16 @@ internal fun VirtualFile.isSupported(resolver: ZwojeTemplateResolver<Any>): Bool
         else -> DEFAULT_EXTENSION
     }
 
+    return this.extension == extension
+}
+
+internal fun VirtualFile.isCorrectDirectory(resolver: ZwojeTemplateResolver<Any>): Boolean {
     val templateDir = when (resolver) {
         is TemplateProvider -> resolver.templatesDir
         else -> DEFAULT_TEMPLATE_DIR
     }
 
-    return this.extension == extension && parent.path.endsWith(templateDir)
+    return parent.path.endsWith(templateDir)
 }
 
 internal fun VirtualFile.nameWithExtension(extension: String): String =

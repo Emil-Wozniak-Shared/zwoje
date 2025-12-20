@@ -4,7 +4,7 @@ import org.thymeleaf.Thymeleaf
 import pl.ejdev.zwoje.core.exception.TemplateNotFoundException
 import pl.ejdev.zwoje.core.template.*
 
-class ZwojeThymeleafTemplateResolver() : ZwojeTemplateResolver<Any>(), TemplateProvider {
+class ZwojeThymeleafTemplateResolver : ZwojeTemplateResolver<Any>(), TemplateProvider {
     override val type: TemplateType = TemplateType.Thymeleaf
     override val baseDir: String = "src/main/resources"
     override val templatesDir: String = "templates"

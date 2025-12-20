@@ -1,6 +1,5 @@
 package pl.ejdev.zwoje.actions
 
-import com.intellij.openapi.actionSystem.ActionUpdateThread
 import com.intellij.openapi.components.service
 import com.intellij.openapi.editor.Editor
 import com.intellij.openapi.fileEditor.FileDocumentManager
@@ -9,7 +8,7 @@ import com.intellij.openapi.ui.Messages.showErrorDialog
 import com.intellij.openapi.ui.Messages.showWarningDialog
 import com.intellij.openapi.vfs.VirtualFile
 import com.intellij.openapi.wm.ToolWindowManager
-import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService
+import pl.ejdev.zwoje.service.PdfEngineCompileService
 import pl.ejdev.zwoje.service.TemplateResolverService
 import pl.ejdev.zwoje.utils.nameWithExtension
 import pl.ejdev.zwoje.window.ZWOJE_WINDOW_KEY
@@ -27,10 +26,10 @@ class PreviewAction() : AnFileAction() {
 
     private fun showPreview(project: Project, file: VirtualFile, content: String) {
         val templateResolverService = project.service<TemplateResolverService>()
-        val openHtmlEngineCompileService = project.service<OpenHtmlEngineCompileService>()
+        val pdfEngineCompileService = project.service<PdfEngineCompileService>()
         val zwojeWindow = project.getUserData(ZWOJE_WINDOW_KEY)
         val resolver = templateResolverService.findFor(file) ?: return
-        openHtmlEngineCompileService.compile(resolver, file, content)
+        pdfEngineCompileService.compile(resolver, file, content)
             .onSuccess {
                 if (zwojeWindow != null) {
                     zwojeWindow.viewer.loadPdfBytes(it, file.nameWithExtension("pdf"))

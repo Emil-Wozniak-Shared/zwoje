@@ -7,7 +7,7 @@ import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages.*
 import com.intellij.openapi.vfs.VirtualFile
 import kotlinx.io.IOException
-import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService
+import pl.ejdev.zwoje.service.PdfEngineCompileService
 import pl.ejdev.zwoje.service.TemplateResolverService
 import pl.ejdev.zwoje.utils.nameWithExtension
 import java.io.File
@@ -25,9 +25,9 @@ class GeneratePdfAction() : AnFileAction() {
 
     private fun createPdf(project: Project, file: VirtualFile, content: String) {
         val templateResolverService = project.service<TemplateResolverService>()
-        val openHtmlEngineCompileService = project.service<OpenHtmlEngineCompileService>()
+        val pdfEngineCompileService = project.service<PdfEngineCompileService>()
         val resolver = templateResolverService.findFor(file) ?: return
-        openHtmlEngineCompileService.compile(resolver, file, content)
+        pdfEngineCompileService.compile(resolver, file, content)
             .onSuccess {
                 val fileName = file.nameWithExtension("pdf")
                 savePdfToHomeDir(project, fileName, it)

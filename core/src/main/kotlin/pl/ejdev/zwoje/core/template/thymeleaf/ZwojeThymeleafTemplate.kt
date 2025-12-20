@@ -6,6 +6,7 @@ import org.thymeleaf.templatemode.TemplateMode
 import org.thymeleaf.templateresolver.ClassLoaderTemplateResolver
 import org.thymeleaf.templateresolver.FileTemplateResolver
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateOutput
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.File
@@ -16,8 +17,8 @@ abstract class ZwojeThymeleafTemplate<INPUT : Any>(
 ) : ZwojeTemplate<TemplateInputData<INPUT>, INPUT> {
     val engine: TemplateEngine = if (templatePath == null) classpathEngine else templateEngine(templatePath!!)
 
-    override fun compile(input: TemplateInputData<INPUT>): String =
-        engine.process(templateName, input.toContext())
+    override fun compile(input: TemplateInputData<INPUT>): TemplateOutput =
+        engine.process(templateName, input.toContext()).let { TemplateOutput.Html(it) }
 
     private fun TemplateInputData<INPUT>.toContext(): Context = Context().apply {
         getMembers().forEach { (name, value) -> setVariable(name, value) }

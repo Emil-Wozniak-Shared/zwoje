@@ -1,10 +1,6 @@
 package pl.ejdev.zwoje.core.engine
 
-abstract class PdfCompileEngine {
-    abstract fun compile(compileData: CompileData): ByteArray
+abstract class PdfCompileEngine<out C : CompileData> {
+    abstract fun compile(compileData: @UnsafeVariance C): ByteArray
 }
 
-data class CompileData(
-    val html: String,
-    val templatePath: String?
-)

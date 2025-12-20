@@ -13,12 +13,14 @@ import com.intellij.openapi.vfs.VirtualFile
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
 import pl.ejdev.zwoje.service.TemplateResolverService
 import pl.ejdev.zwoje.service.ZwojeSampleService
+import pl.ejdev.zwoje.utils.isCorrectDirectory
 import pl.ejdev.zwoje.utils.isSupported
 
 private const val TITLE = "Samples Button"
 private const val NO_SUITABLE_TEMPLATE_RESOLVER = "No suitable template resolver."
 private const val PLEASE_OPEN_TEMPLATE_FILE = "Please open template file."
 private const val SELECTED_FILE_IS_NOT_SUPPORTED = "Selected file is not supported."
+private const val SELECTED_FILE_IS_NOT_IN_TEMPLATES = "Selected file is not in template directory."
 
 class CreateTemplateContextAction(
     private val project: Project,
@@ -48,10 +50,11 @@ class CreateTemplateContextAction(
     }
 
     private fun createZwojeContext(virtualFile: VirtualFile, resolver: ZwojeTemplateResolver<Any>) {
-        if (virtualFile.isSupported(resolver)) {
-            createFiles(virtualFile, resolver)
-        } else {
-            showWarningDialog(project, SELECTED_FILE_IS_NOT_SUPPORTED, TITLE)
+        when {
+            !virtualFile.isSupported(resolver) -> showWarningDialog(project, SELECTED_FILE_IS_NOT_SUPPORTED, TITLE)
+            !virtualFile.isCorrectDirectory(resolver) ->
+                showWarningDialog(project, SELECTED_FILE_IS_NOT_IN_TEMPLATES, TITLE)
+            else -> createFiles(virtualFile, resolver)
         }
     }
 

@@ -6,10 +6,11 @@ import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.template.freemarker.ZwojeFreeMarkerTemplate
 import pl.ejdev.zwoje.core.template.groovyTemplates.ZwojeGroovyMarkupTemplate
+import pl.ejdev.zwoje.core.template.jasper.JasperTemplate
 import pl.ejdev.zwoje.core.template.mustache.ZwojeMustacheTemplate
 import pl.ejdev.zwoje.core.template.pebble.ZwojePebbleTemplate
 import pl.ejdev.zwoje.core.template.thymeleaf.ZwojeThymeleafTemplate
-import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService.IJTemplateInputData
+import pl.ejdev.zwoje.service.PdfEngineCompileService.IJTemplateInputData
 
 @Service(Service.Level.PROJECT)
 class TemplateTypeService {
@@ -24,6 +25,7 @@ class TemplateTypeService {
         TemplateType.Mustache -> IJZwojeMustacheTemplate(id, templatePath)
         TemplateType.FreeMarker -> IJZwojeFreeMarkerTemplate(id, templatePath)
         TemplateType.Pebble -> IJZwojePebbleTemplate(id, templatePath)
+        TemplateType.Jasper -> IJZwojeJasperTemplate(id, templatePath)
         TemplateType.KotlinxHtml -> TODO("kotlinx html is not ready")
     }
 
@@ -41,5 +43,8 @@ class TemplateTypeService {
 
     class IJZwojePebbleTemplate(name: String, templatePath: String) :
         ZwojePebbleTemplate<IJTemplateInputData>(templatePath)
+
+    class IJZwojeJasperTemplate(name: String, templatePath: String) :
+        JasperTemplate<IJTemplateInputData>(templatePath)
 
 }

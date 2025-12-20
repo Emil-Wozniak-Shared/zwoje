@@ -4,10 +4,7 @@ import com.intellij.openapi.components.service
 import com.intellij.openapi.project.Project
 import com.intellij.openapi.ui.Messages
 import com.intellij.openapi.vfs.VirtualFile
-import com.jetbrains.rd.util.Result
 import io.mockk.*
-import org.amshove.kluent.shouldBeEqualTo
-import org.amshove.kluent.shouldBeInstanceOf
 import org.amshove.kluent.shouldBeNull
 import org.amshove.kluent.shouldBeTrue
 import org.amshove.kluent.shouldNotBeEmpty
@@ -20,7 +17,7 @@ import org.junit.Test
 import pl.ejdev.zwoje.core.ZwojeEngine
 import pl.ejdev.zwoje.core.template.TemplateType
 import pl.ejdev.zwoje.core.template.ZwojeTemplateResolver
-import pl.ejdev.zwoje.service.OpenHtmlEngineCompileService.IJTemplateInputData
+import pl.ejdev.zwoje.service.PdfEngineCompileService.IJTemplateInputData
 import pl.ejdev.zwoje.service.ZwojeSampleService.GetSampleResult
 
 private const val HTML_TEXT = "<html></html>"
@@ -35,7 +32,7 @@ class OpenHtmlEngineCompileServiceTest {
     private lateinit var mockFile: VirtualFile
     private lateinit var mockResolver: ZwojeTemplateResolver<Any>
     private lateinit var mockEngine: ZwojeEngine
-    private lateinit var service: OpenHtmlEngineCompileService
+    private lateinit var service: PdfEngineCompileService
     private lateinit var jsonParseService: JsonParseService
 
     @Before
@@ -58,7 +55,7 @@ class OpenHtmlEngineCompileServiceTest {
         every { mockProject.service<ZwojeSampleService>() } returns mockSampleService
         every { mockProject.service<JsonParseService>() } returns jsonParseService
 
-        service = OpenHtmlEngineCompileService(mockProject)
+        service = PdfEngineCompileService(mockProject)
     }
 
     @After

@@ -3,6 +3,7 @@ package pl.ejdev.zwoje.core.template.groovyTemplates
 import groovy.text.markup.MarkupTemplateEngine
 import groovy.text.markup.TemplateConfiguration
 import pl.ejdev.zwoje.core.template.TemplateInputData
+import pl.ejdev.zwoje.core.template.TemplateOutput
 import pl.ejdev.zwoje.core.template.ZwojeTemplate
 import pl.ejdev.zwoje.core.utils.getMembers
 import java.io.StringWriter
@@ -20,7 +21,7 @@ abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
         }
     }
 
-    override fun compile(input: TemplateInputData<INPUT>): String {
+    override fun compile(input: TemplateInputData<INPUT>): TemplateOutput {
         val template = engine.createTemplateByPath(templatePath)
             ?: throw IllegalArgumentException("Template not found at path: $templatePath")
 
@@ -28,7 +29,7 @@ abstract class ZwojeGroovyMarkupTemplate<INPUT : Any>(
         template
             .make(input.getMembers().toMap())
             .writeTo(writer)
-        return writer.toString()
+        return writer.toString().let { TemplateOutput.Html(it) }
     }
 }
 

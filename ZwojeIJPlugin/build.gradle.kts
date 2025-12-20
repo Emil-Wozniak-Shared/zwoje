@@ -35,7 +35,11 @@ dependencies {
     implementation(libs.freemarker)
     implementation(libs.groovy.templates)
     implementation(libs.pebble)
+    implementation(libs.jasper)
+
     implementation(libs.coroutines.core)
+    implementation("commons-digester:commons-digester:2.1")
+    implementation("org.apache.commons:commons-collections4:4.5.0")
 
     testImplementation(libs.mockk)
     testImplementation(libs.coroutines.test)
